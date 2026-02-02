@@ -55,10 +55,15 @@ jobs:
         run: chmod +x gradlew
       
       - name: Build Release APK (no signing)
-        run: ./gradlew assembleRelease
+        run: |
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=/dev/null \
+            -Pandroid.injected.signing.store.password=dummy \
+            -Pandroid.injected.signing.key.alias=dummy \
+            -Pandroid.injected.signing.key.password=dummy
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: han1meviewer-release-unsigned
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          path: app/build/outputs/apk/release/*.apk
