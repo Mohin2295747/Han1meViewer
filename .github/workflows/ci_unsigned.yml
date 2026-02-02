@@ -23,7 +23,9 @@ jobs:
       
       - name: Create minimal google-services.json
         run: |
-          echo '{
+          mkdir -p app
+          cat <<'EOF' > app/google-services.json
+          {
             "project_info": {
               "project_number": "123456789012",
               "project_id": "dummy-project",
@@ -42,7 +44,8 @@ jobs:
               "services": {}
             }],
             "configuration_version": "1"
-          }' > app/google-services.json
+          }
+          EOF
       
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -54,13 +57,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       
-      - name: Build Release APK (no signing)
+      - name: Build Release APK (unsigned)
         run: |
           ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=/dev/null \
-            -Pandroid.injected.signing.store.password=dummy \
-            -Pandroid.injected.signing.key.alias=dummy \
-            -Pandroid.injected.signing.key.password=dummy
+            -x validateSigningRelease \
+            -x :app:validateSigningRelease
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
