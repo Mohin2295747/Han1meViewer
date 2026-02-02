@@ -1,65 +1,37 @@
-name: Build Unsigned Debug APK
+name: Build APK - No Firebase No Signing
 
 on:
   push:
     branches: [ "main" ]
-    paths-ignore:
-      - "**.md"
-  pull_request:
-    branches: [ "main" ]
-    paths-ignore:
-      - "**.md"
-
-permissions:
-  contents: read
 
 jobs:
-  build-debug:
+  build:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Create minimal google-services.json
-        run: |
-          mkdir -p app
-          cat <<'EOF' > app/google-services.json
-          {
-            "project_info": {
-              "project_number": "123456789012",
-              "project_id": "dummy-project"
-            },
-            "client": [{
-              "client_info": {
-                "mobilesdk_app_id": "1:123456789012:android:abc123",
-                "android_client_info": {
-                  "package_name": "com.yenaly.han1meviewer"
-                }
-              },
-              "api_key": [{
-                "current_key": "AIzaSyDummyKey"
-              }]
-            }],
-            "configuration_version": "1"
-          }
-          EOF
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build Debug APK (unsigned)
-        run: ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      
+      - run: chmod +x gradlew
+      
+      - run: |
+          # Disable Firebase completely
+          echo "" > app/google-services.json
+          echo "" > app/src/debug/google-services.json
+          echo "" > app/src/release/google-services.json
+          
+          # Create empty keystore
+          mkdir -p ~/.android
+          rm -rf  ~/.android/keystore.jks
+          echo "dummy" > ~/.android/keystore.jks
+      
+      - run: ./gradlew assembleDebug
+      
+      - uses: actions/upload-artifact@v4
         with:
-          name: han1meviewer-debug-unsigned
+          name: han1meviewer-debug
           path: app/build/outputs/apk/debug/*.apk
