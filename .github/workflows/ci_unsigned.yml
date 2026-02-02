@@ -21,9 +21,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Create dummy google-services.json
+      - name: Create dummy google-services.json for release build
         run: |
-          # Create a minimal valid google-services.json
+          # Create google-services.json with release package name
           cat > app/google-services.json << 'EOF'
           {
             "project_info": {
@@ -69,16 +69,17 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Build Unsigned Release APK
+        run: |
+          # Build release without signing
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=/dev/null \
+            -Pandroid.injected.signing.store.password=dummy \
+            -Pandroid.injected.signing.key.alias=dummy \
+            -Pandroid.injected.signing.key.password=dummy
       
-      - name: Upload Debug APK
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-      
-      - name: List APK files
-        run: |
-          echo "Built APKs:"
-          find app/build/outputs/apk -name "*.apk" -type f | xargs ls -la
+          name: app-release-unsigned
+          path: app/build/outputs/apk/release/*release*.apk
