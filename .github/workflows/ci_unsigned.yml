@@ -1,4 +1,4 @@
-name: Build Unsigned APK
+name: Build Unsigned Debug APK
 
 on:
   push:
@@ -14,13 +14,13 @@ permissions:
   contents: read
 
 jobs:
-  build-unsigned:
+  build-debug:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Create minimal google-services.json
         run: |
           mkdir -p app
@@ -28,8 +28,7 @@ jobs:
           {
             "project_info": {
               "project_number": "123456789012",
-              "project_id": "dummy-project",
-              "storage_bucket": "dummy-project.appspot.com"
+              "project_id": "dummy-project"
             },
             "client": [{
               "client_info": {
@@ -39,32 +38,28 @@ jobs:
                 }
               },
               "api_key": [{
-                "current_key": "AIzaSyDummyKey1234567890"
-              }],
-              "services": {}
+                "current_key": "AIzaSyDummyKey"
+              }]
             }],
             "configuration_version": "1"
           }
           EOF
-      
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: gradle
-      
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      
-      - name: Build Release APK (unsigned)
-        run: |
-          ./gradlew assembleRelease \
-            -x validateSigningRelease \
-            -x :app:validateSigningRelease
-      
+
+      - name: Build Debug APK (unsigned)
+        run: ./gradlew assembleDebug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: han1meviewer-release-unsigned
-          path: app/build/outputs/apk/release/*.apk
+          name: han1meviewer-debug-unsigned
+          path: app/build/outputs/apk/debug/*.apk
