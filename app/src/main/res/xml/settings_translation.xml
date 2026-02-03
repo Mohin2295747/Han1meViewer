@@ -46,4 +46,20 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Page Storage">
+
+        <Preference
+            android:key="view_stored_pages"
+            android:title="@string/view_stored_pages"
+            android:summary="@string/stored_pages_summary"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="clear_all_pages"
+            android:title="@string/clear_all_pages"
+            android:summary="@string/no_pages_stored"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

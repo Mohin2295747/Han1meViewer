@@ -131,6 +131,114 @@ object TranslationManager {
     }
 
     /**
+     * Enhanced function to get translated content with page storage
+     */
+    suspend fun getTranslatedContentWithStorage(originalUrl: String, originalContent: String): String {
+        val config = loadConfig()
+        if (!config.isEnabled) {
+            Log.d(TAG, "Translation is disabled")
+            return originalContent
+        }
+        
+        // Initialize storage
+        PageStorageManager.initialize()
+        
+        // Check existing version
+        val existingVersion = PageStorageManager.loadPageVersion(originalUrl)
+        val contentChecksum = PageStorageManager.calculateChecksum(originalContent)
+        
+        // Determine if translation is needed
+        val needsTranslation = when {
+            existingVersion == null -> {
+                Log.d(TAG, "First time processing: $originalUrl")
+                true
+            }
+            existingVersion.checksum != contentChecksum -> {
+                Log.d(TAG, "Page changed, needs retranslation: $originalUrl")
+                true
+            }
+            existingVersion.translationStatus == com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.FAILED -> {
+                Log.d(TAG, "Previous translation failed, retrying: $originalUrl")
+                true
+            }
+            existingVersion.translationStatus == com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.STALE -> {
+                Log.d(TAG, "Page marked as stale, retranslating: $originalUrl")
+                true
+            }
+            else -> {
+                Log.d(TAG, "Using cached translation: $originalUrl")
+                false
+            }
+        }
+        
+        // Save original HTML
+        PageStorageManager.saveOriginalHtml(originalUrl, originalContent)
+        
+        // Translate if needed
+        val resultHtml = if (needsTranslation) {
+            Log.d(TAG, "Translating page: $originalUrl")
+            val translatedUrl = generateTranslatedUrl(originalUrl, config)
+            
+            if (translatedUrl.isBlank()) {
+                Log.w(TAG, "Failed to generate translated URL")
+                updatePageVersion(originalUrl, originalContent, com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.FAILED)
+                originalContent
+            } else {
+                try {
+                    // Use fetchTranslatedPage for translation
+                    val translatedContent = fetchTranslatedPage(translatedUrl)
+                    
+                    if (translatedContent.isNotBlank() && isTranslationSuccessful(translatedContent)) {
+                        PageStorageManager.saveTranslatedHtml(originalUrl, translatedContent)
+                        updatePageVersion(originalUrl, originalContent, com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.TRANSLATED)
+                        translatedContent
+                    } else {
+                        Log.w(TAG, "Translation returned empty or invalid")
+                        updatePageVersion(originalUrl, originalContent, com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.FAILED)
+                        originalContent
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Translation failed", e)
+                    updatePageVersion(originalUrl, originalContent, com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.FAILED)
+                    originalContent
+                }
+            }
+        } else {
+            // Load from cache
+            PageStorageManager.loadHtml(originalUrl) ?: originalContent
+        }
+        
+        return resultHtml
+    }
+
+    /**
+     * Update page version in storage
+     */
+    private fun updatePageVersion(url: String, html: String, status: com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus) {
+        val checksum = PageStorageManager.calculateChecksum(html)
+        val version = com.yenaly.han1meviewer.logic.model.PageVersion(
+            url = url,
+            checksum = checksum,
+            translationStatus = status,
+            lastChecked = System.currentTimeMillis(),
+            lastModified = System.currentTimeMillis()
+        )
+        PageStorageManager.savePageVersion(version)
+    }
+
+    /**
+     * Check if translation appears successful
+     */
+    private fun isTranslationSuccessful(html: String): Boolean {
+        // Check if HTML contains significant English text
+        val englishCount = Regex("[a-zA-Z]").findAll(html).count()
+        val chineseCount = Regex("[\u4e00-\u9fff]").findAll(html).count()
+        
+        // If we have English text and not much Chinese, translation likely succeeded
+        return englishCount > 100 && chineseCount < 50
+    }
+
+    /**
      * Generates the translated URL from the original URL
      */
     private fun generateTranslatedUrl(originalUrl: String, config: TranslationConfig): String {
@@ -268,5 +376,38 @@ object TranslationManager {
     fun extractChineseText(content: String): List<String> {
         val chineseRegex = Regex("[\u4e00-\u9fff]+")
         return chineseRegex.findAll(content).map { it.value }.toList()
+    }
+
+    /**
+     * Get translation status for a URL
+     */
+    fun getTranslationStatus(url: String): com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus {
+        return PageStorageManager.loadPageVersion(url)?.translationStatus 
+            ?: com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.PENDING
+    }
+
+    /**
+     * Force retranslation of a URL
+     */
+    suspend fun forceRetranslate(url: String): Boolean {
+        return try {
+            val config = loadConfig()
+            if (!config.isEnabled) return false
+            
+            val translatedUrl = generateTranslatedUrl(url, config)
+            if (translatedUrl.isBlank()) return false
+            
+            val translatedHtml = fetchTranslatedPage(translatedUrl)
+            if (translatedHtml.isNotBlank()) {
+                PageStorageManager.saveTranslatedHtml(url, translatedHtml)
+                updatePageVersion(url, translatedHtml, com.yenaly.han1meviewer.logic.model.PageVersion.TranslationStatus.TRANSLATED)
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Force retranslation failed", e)
+            false
+        }
     }
 }

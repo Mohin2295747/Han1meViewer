@@ -52,6 +52,8 @@ class HanimeApplication : YenalyApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        PageStorageManager.initialize()
+        cleanupOldPages()
         ThemeUtils.applyDarkModeFromPreferences(this)
         if (Preferences.useDynamicColor){
             DynamicColors.applyToActivitiesIfAvailable(this)
@@ -115,6 +117,17 @@ class HanimeApplication : YenalyApplication() {
             NotificationManagerCompat.IMPORTANCE_HIGH
         ).setName("App Update").build()
         nm.createNotificationChannel(appUpdateChannel)
+    }
+
+    private fun cleanupOldPages() {
+        val thirtyDaysAgo = System.currentTimeMillis() - (5L * 24 * 60 * 60 * 1000)
+        val pages = PageStorageManager.getAllPageVersions()
+    
+        pages.forEach { page ->
+            if (page.lastChecked < thirtyDaysAgo) {
+                PageStorageManager.deletePageData(page.url)
+            }
+        }
     }
     fun switchLauncher(alias: String) {
         val pm = packageManager

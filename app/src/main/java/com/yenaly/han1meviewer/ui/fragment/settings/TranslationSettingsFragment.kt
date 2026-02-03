@@ -10,6 +10,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.yenaly.han1meviewer.R
 import com.yenaly.han1meviewer.Preferences
+import com.yenaly.han1meviewer.logic.PageStorageManager
 import com.yenaly.han1meviewer.logic.TranslationManager
 import kotlinx.coroutines.runBlocking
 
@@ -25,6 +26,8 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         const val TRANSLATION_DELAY_MS = "translation_delay_ms"
         const val TRANSLATION_MAX_RETRIES = "translation_max_retries"
         const val CLEAR_TRANSLATION_CACHE = "clear_translation_cache"
+        const val VIEW_STORED_PAGES = "view_stored_pages"
+        const val CLEAR_ALL_PAGES = "clear_all_pages"
         const val RESTART_APP = "restart_app"
     }
 
@@ -34,6 +37,8 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
     private lateinit var translationDelayPref: Preference
     private lateinit var translationMaxRetriesPref: Preference
     private lateinit var clearCachePref: Preference
+    private lateinit var viewStoredPagesPref: Preference
+    private lateinit var clearAllPagesPref: Preference
     private lateinit var restartAppPref: Preference
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -46,6 +51,8 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         translationDelayPref = findPreference(TRANSLATION_DELAY_MS)!!
         translationMaxRetriesPref = findPreference(TRANSLATION_MAX_RETRIES)!!
         clearCachePref = findPreference(CLEAR_TRANSLATION_CACHE)!!
+        viewStoredPagesPref = findPreference(VIEW_STORED_PAGES)!!
+        clearAllPagesPref = findPreference(CLEAR_ALL_PAGES)!!
         restartAppPref = findPreference(RESTART_APP)!!
 
         setupPreferences()
@@ -54,6 +61,9 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
     private fun setupPreferences() {
         // Set initial values
         translationKeyPref.summary = getTranslationKeySummary()
+        
+        // Update stored pages summary
+        updateStoredPagesSummary()
         
         // Set up preference change listeners
         translationEnabledPref.setOnPreferenceChangeListener { _, newValue ->
@@ -93,6 +103,16 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        viewStoredPagesPref.setOnPreferenceClickListener {
+            navigateToPageStorage()
+            true
+        }
+
+        clearAllPagesPref.setOnPreferenceClickListener {
+            showClearAllPagesDialog()
+            true
+        }
+
         restartAppPref.setOnPreferenceClickListener {
             showRestartDialog()
             true
@@ -108,6 +128,8 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         translationDelayPref.isEnabled = isEnabled
         translationMaxRetriesPref.isEnabled = isEnabled
         clearCachePref.isEnabled = isEnabled
+        viewStoredPagesPref.isEnabled = isEnabled
+        clearAllPagesPref.isEnabled = isEnabled
     }
 
     private fun getTranslationKeySummary(): String {
@@ -119,6 +141,30 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 "${key.substring(0, 27)}..."
             } else {
                 key
+            }
+        }
+    }
+
+    private fun updateStoredPagesSummary() {
+        runBlocking {
+            PageStorageManager.initialize()
+            val stats = PageStorageManager.getStorageStats()
+            
+            viewStoredPagesPref.summary = getString(
+                R.string.stored_pages_summary,
+                stats.totalPages,
+                stats.translated,
+                stats.failed,
+                stats.stale
+            )
+            
+            // Update clear all pages summary
+            if (stats.totalPages > 0) {
+                clearAllPagesPref.summary = getString(R.string.clear_all_pages_summary, stats.totalPages)
+                clearAllPagesPref.isEnabled = true
+            } else {
+                clearAllPagesPref.summary = getString(R.string.no_pages_stored)
+                clearAllPagesPref.isEnabled = false
             }
         }
     }
@@ -219,6 +265,24 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             .show()
     }
 
+    private fun showClearAllPagesDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.clear_all_pages)
+            .setMessage(R.string.clear_all_pages_confirmation)
+            .setPositiveButton(R.string.clear) { dialog, _ ->
+                runBlocking {
+                    PageStorageManager.clearAll()
+                }
+                updateStoredPagesSummary()
+                showToast(getString(R.string.all_pages_cleared))
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     private fun showRestartDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.restart_app)
@@ -241,12 +305,24 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             .show()
     }
 
+    private fun navigateToPageStorage() {
+        // Navigate to PageStorageFragment
+        val fragment = PageStorageFragment()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.settings_container, fragment) // Adjust container ID based on your layout
+            .addToBackStack(null)
+            .commit()
+    }
+
     override fun onResume() {
         super.onResume()
-        // Update summary when returning to fragment
+        // Update summaries when returning to fragment
         translationKeyPref.summary = getTranslationKeySummary()
         translationDelayPref.summary = getString(R.string.translation_delay_summary, Preferences.translationDelayMs)
         translationMaxRetriesPref.summary = getString(R.string.translation_max_retries_summary, Preferences.translationMaxRetries)
+        
+        // Update stored pages summary
+        updateStoredPagesSummary()
     }
 
     private fun showToast(message: String) {

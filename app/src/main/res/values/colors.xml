@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Add these colors -->
+<color name="translated_bg">#E8F5E9</color>
+<color name="failed_bg">#FFEBEE</color>
+<color name="stale_bg">#FFF3E0</color>
+<color name="unchanged_bg">#E3F2FD</color>
+<color name="pending_bg">#F5F5F5</color>
+
+<color name="green">#4CAF50</color>
+<color name="red">#F44336</color>
+<color name="orange">#FF9800</color>
+<color name="blue">#2196F3</color>
+<color name="gray">#9E9E9E</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

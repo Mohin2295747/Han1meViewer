@@ -306,10 +306,11 @@ object NetworkRepo {
             )
         }
     ) { _, body ->
-    // Use the action parameter instead of direct function reference
+        // Use the action parameter instead of direct function reference
         Parser.reportCommentResponse(body ?: EMPTY_STRING)
     }
     //</editor-fold>
+
     //<editor-fold desc="Subscription">
 
     fun subscribeArtist(
@@ -375,7 +376,7 @@ object NetworkRepo {
     }.flowOn(Dispatchers.IO)
 
     /**
-     * 用于单网页的情况
+     * 用于单网页的情况 - ENHANCED VERSION WITH PAGE STORAGE
      *
      * @param permittedSuccessCode 用于处理特殊情况，比如[NetworkRepo.modifyPlaylist]需要302成功
      */
@@ -389,7 +390,12 @@ object NetworkRepo {
         val permitted = permittedSuccessCode?.contains(requestResult.code()) == true
         if ((permitted || requestResult.isSuccessful)) {
             val url = requestResult.raw().request.url.toString()
-            emit(action.invoke(url, resultBody ?: EMPTY_STRING))
+            
+            // ENHANCED: Use translation with page storage
+            val translatedBody = TranslationManager.getTranslatedContentWithStorage(url, resultBody ?: EMPTY_STRING)
+            
+            // Parse the translated content
+            emit(action.invoke(url, translatedBody))
         } else {
             requestResult.throwRequestException()
         }
@@ -398,7 +404,7 @@ object NetworkRepo {
     }.flowOn(Dispatchers.IO)
 
     /**
-     * 用于有page分页的情况
+     * 用于有page分页的情况 - ENHANCED VERSION WITH PAGE STORAGE
      */
     private inline fun <reified T> pageIOFlow(
         crossinline request: suspend () -> Response<ResponseBody>,
@@ -408,7 +414,12 @@ object NetworkRepo {
         val resultBody = requestResult.body()?.string()
         if (requestResult.isSuccessful && resultBody != null) {
             val url = requestResult.raw().request.url.toString()
-            emit(action.invoke(url, resultBody))
+            
+            // ENHANCED: Use translation with page storage
+            val translatedBody = TranslationManager.getTranslatedContentWithStorage(url, resultBody)
+            
+            // Parse the translated content
+            emit(action.invoke(url, translatedBody))
         } else {
             requestResult.throwRequestException()
         }
@@ -417,7 +428,7 @@ object NetworkRepo {
     }.flowOn(Dispatchers.IO)
 
     /**
-     * 用于影片界面
+     * 用于影片界面 - ENHANCED VERSION WITH PAGE STORAGE
      */
     private inline fun <reified T> videoIOFlow(
         crossinline request: suspend () -> Response<ResponseBody>,
@@ -427,12 +438,40 @@ object NetworkRepo {
         val resultBody = requestResult.body()?.string()
         if (requestResult.isSuccessful && resultBody != null) {
             val url = requestResult.raw().request.url.toString()
-            emit(action.invoke(url, resultBody))
+            
+            // ENHANCED: Use translation with page storage
+            val translatedBody = TranslationManager.getTranslatedContentWithStorage(url, resultBody)
+            
+            // Parse the translated content
+            emit(action.invoke(url, translatedBody))
         } else {
             requestResult.throwRequestException()
         }
     }.catch { e ->
         emit(VideoLoadingState.Error(handleException(e)))
+    }.flowOn(Dispatchers.IO)
+
+    /**
+     * Legacy websiteIOFlow for backward compatibility (without page storage)
+     */
+    private inline fun <reified T> websiteIOFlowLegacy(
+        crossinline request: suspend () -> Response<ResponseBody>,
+        permittedSuccessCode: IntArray? = null,
+        crossinline action: suspend (String, String) -> WebsiteState<T>,
+    ) = flow {
+        val requestResult = request.invoke()
+        val resultBody = requestResult.body()?.string()
+        val permitted = permittedSuccessCode?.contains(requestResult.code()) == true
+        if ((permitted || requestResult.isSuccessful)) {
+            val url = requestResult.raw().request.url.toString()
+            // Use legacy translation method (without storage)
+            val translatedBody = TranslationManager.getTranslatedContent(url, resultBody ?: EMPTY_STRING)
+            emit(action.invoke(url, translatedBody))
+        } else {
+            requestResult.throwRequestException()
+        }
+    }.catch { e ->
+        emit(WebsiteState.Error(handleException(e)))
     }.flowOn(Dispatchers.IO)
 
     private fun Response<ResponseBody>.throwRequestException(): Nothing {

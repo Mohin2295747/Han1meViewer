@@ -602,4 +602,29 @@
 
     <string name="translation_restart_summary">Restart app after changing translation settings</string>
     <string name="translation_restart_message">Some translation settings require a restart to take effect. Restart now?</string>
+    <!-- Add these strings to your strings.xml file -->
+<string name="view_stored_pages">View Stored Pages</string>
+<string name="view_stored_pages_summary">View and manage translated pages</string>
+<string name="page_storage_stats">Total: %1$d\nTranslated: %2$d\nFailed: %3$d\nStale: %4$d\nUnchanged: %5$d</string>
+
+<string name="clear_all_pages_confirmation">Delete all stored pages? This cannot be undone.</string>
+<string name="page_detail">Page Details</string>
+<string name="view_html">View HTML</string>
+<string name="view_diff">View Changes</string>
+<string name="retranslate">Re-translate</string>
+<string name="delete_page">Delete Page</string>
+<string name="status_translated">✓ Translated</string>
+<string name="status_failed">✗ Failed</string>
+<string name="status_stale">↻ Needs Update</string>
+<string name="status_unchanged">✓ Unchanged</string>
+<string name="status_pending">⏳ Pending</string>
+<!-- Add these strings to your strings.xml -->
+<string name="page_storage">Page Storage</string>
+
+<string name="stored_pages_summary">%1$d pages stored (%2$d ✓, %3$d ✗, %4$d ↻)</string>
+<string name="clear_all_pages">Clear All Pages</string>
+<string name="clear_all_pages_summary">Clear %1$d stored pages</string>
+<string name="no_pages_stored">No pages stored yet</string>
+<string name="all_pages_cleared">All stored pages cleared</string>
+<string name="clear_all_pages_confirmation">Delete all stored pages? This cannot be undone.</string>
 </resources>
