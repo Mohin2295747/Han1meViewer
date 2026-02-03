@@ -43,7 +43,5 @@
     <fragment
         android:id="@+id/translationSettingsFragment"
         android:name="com.yenaly.han1meviewer.ui.fragment.settings.TranslationSettingsFragment"
-        android:label="@string/translation_settings"
-        tools:layout="@xml/settings_translation" />
-
+        android:label="@string/translation_settings" />
 </navigation>
