@@ -597,8 +597,9 @@
     <string name="reset">reset</string>
     <string name="restart">restart</string>
     <string name="reset_to_default">deafult</string>
-
+    <!-- Add these to your strings.xml -->
     <string name="restart_app">Restart App</string>
+
     <string name="translation_restart_summary">Restart app after changing translation settings</string>
     <string name="translation_restart_message">Some translation settings require a restart to take effect. Restart now?</string>
 </resources>
