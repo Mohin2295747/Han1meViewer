@@ -2,6 +2,7 @@ package com.yenaly.han1meviewer.ui.viewmodel
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.yenaly.han1meviewer.R
@@ -14,6 +15,7 @@ import com.yenaly.han1meviewer.logic.state.WebsiteState
 import com.yenaly.han1meviewer.ui.fragment.video.CommentFragment
 import com.yenaly.han1meviewer.util.loadAssetAs
 import com.yenaly.yenaly_libs.base.YenalyViewModel
+import com.yenaly.yenaly_libs.utils.unsafeLazy
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -64,6 +66,7 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
     private val _commentLikeFlow =
         MutableSharedFlow<WebsiteState<VideoCommentArgs>>(replay = 0)
     val commentLikeFlow = _commentLikeFlow.asSharedFlow()
+    
     val reportReason by unsafeLazy {
         loadAssetAs<List<ReportReason>>("report_reason.json").orEmpty()
     }
@@ -215,15 +218,15 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
         val context = application.applicationContext
         if (args.isPositive) {
             if (args.comment.post.likeCommentStatus) {
-                android.widget.Toast.makeText(context, R.string.cancel_thumb_up_success, android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.cancel_thumb_up_success, Toast.LENGTH_SHORT).show()
             } else {
-                android.widget.Toast.makeText(context, R.string.thumb_up_success, android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.thumb_up_success, Toast.LENGTH_SHORT).show()
             }
         } else {
             if (args.comment.post.unlikeCommentStatus) {
-                android.widget.Toast.makeText(context, R.string.cancel_thumb_down_success, android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.cancel_thumb_down_success, Toast.LENGTH_SHORT).show()
             } else {
-                android.widget.Toast.makeText(context, R.string.thumb_down_success, android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.thumb_down_success, Toast.LENGTH_SHORT).show()
             }
         }
     }

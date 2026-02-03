@@ -594,6 +594,11 @@
     <string name="translation_cache_cleared">Translation cache cleared</string>
     <string name="translation_settings">Translation Settings</string>
     <string name="translation_settings_summary">Translate Chinese text to English</string>
+    <!-- Add these to your strings.xml if they don't exist -->
+    <string name="reset">reset</string>
+    <string name="restart_app">restart app</string>
+    <string name="restart">restart</string>
+    <string name="reset_to_default">deafult</string>
 
     <string name="restart_app">Restart App</string>
     <string name="translation_restart_summary">Restart app after changing translation settings</string>

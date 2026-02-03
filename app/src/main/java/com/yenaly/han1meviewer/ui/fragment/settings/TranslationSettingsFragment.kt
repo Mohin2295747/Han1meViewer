@@ -133,7 +133,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             .setTitle(R.string.translation_key)
             .setMessage(R.string.translation_key_description)
             .setView(dialogView)
-            .setPositiveButton(R.string.save) { dialog, _ ->
+            .setPositiveButton(R.string.save) { dialog: AlertDialog, _ ->
                 val newKey = editText.text?.toString()?.trim()
                 if (newKey.isNullOrBlank()) {
                     showToast(getString(R.string.translation_key_empty_warning))
@@ -144,10 +144,10 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
                 dialog.dismiss()
             }
-            .setNeutralButton(R.string.reset_to_default) { dialog, _ ->
+            .setNeutralButton(R.string.reset_to_default) { dialog: AlertDialog, _ ->
                 Preferences.translationKey = "zh-en.en.67772d43-6981727d-8453ce13-74722d776562"
                 translationKeyPref.summary = getTranslationKeySummary()
                 showToast(getString(R.string.translation_key_reset))
@@ -168,7 +168,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             .setTitle(R.string.translation_delay)
             .setMessage(R.string.translation_delay_description)
             .setView(dialogView)
-            .setPositiveButton(R.string.save) { dialog, _ ->
+            .setPositiveButton(R.string.save) { dialog: AlertDialog, _ ->
                 val newDelay = editText.text?.toString()?.toLongOrNull()
                 if (newDelay == null || newDelay < 0 || newDelay > 10000) {
                     showToast(getString(R.string.translation_delay_invalid))
@@ -181,7 +181,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
                 dialog.dismiss()
             }
             .show()
@@ -199,7 +199,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             .setTitle(R.string.translation_max_retries)
             .setMessage(R.string.translation_max_retries_description)
             .setView(dialogView)
-            .setPositiveButton(R.string.save) { dialog, _ ->
+            .setPositiveButton(R.string.save) { dialog: AlertDialog, _ ->
                 val newRetries = editText.text?.toString()?.toIntOrNull()
                 if (newRetries == null || newRetries < 0 || newRetries > 10) {
                     showToast(getString(R.string.translation_max_retries_invalid))
@@ -212,7 +212,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
                 dialog.dismiss()
             }
             .show()
@@ -222,7 +222,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.restart_app)
             .setMessage(R.string.translation_restart_message)
-            .setPositiveButton(R.string.restart) { dialog, _ ->
+            .setPositiveButton(R.string.restart_app) { dialog: AlertDialog, _ ->
                 // Restart the app
                 val intent = requireContext().packageManager
                     .getLaunchIntentForPackage(requireContext().packageName)
@@ -234,7 +234,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 android.os.Process.killProcess(android.os.Process.myPid())
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
                 dialog.dismiss()
             }
             .show()
