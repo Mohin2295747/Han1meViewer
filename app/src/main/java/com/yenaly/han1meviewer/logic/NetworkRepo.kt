@@ -382,13 +382,14 @@ object NetworkRepo {
     private inline fun <reified T> websiteIOFlow(
         crossinline request: suspend () -> Response<ResponseBody>,
         permittedSuccessCode: IntArray? = null,
-        crossinline action: (String) -> WebsiteState<T>,
+        crossinline action: suspend (String, String) -> WebsiteState<T>,
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.body()?.string()
         val permitted = permittedSuccessCode?.contains(requestResult.code()) == true
         if ((permitted || requestResult.isSuccessful)) {
-            emit(action.invoke(resultBody ?: EMPTY_STRING))
+            val url = requestResult.raw().request.url.toString()
+            emit(action.invoke(url, resultBody ?: EMPTY_STRING))
         } else {
             requestResult.throwRequestException()
         }
@@ -401,12 +402,13 @@ object NetworkRepo {
      */
     private inline fun <reified T> pageIOFlow(
         crossinline request: suspend () -> Response<ResponseBody>,
-        crossinline action: (String) -> PageLoadingState<T>,
+        crossinline action: suspend (String, String) -> PageLoadingState<T>,
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.body()?.string()
         if (requestResult.isSuccessful && resultBody != null) {
-            emit(action.invoke(resultBody))
+            val url = requestResult.raw().request.url.toString()
+            emit(action.invoke(url, resultBody))
         } else {
             requestResult.throwRequestException()
         }
@@ -419,12 +421,13 @@ object NetworkRepo {
      */
     private inline fun <reified T> videoIOFlow(
         crossinline request: suspend () -> Response<ResponseBody>,
-        crossinline action: (String) -> VideoLoadingState<T>,
+        crossinline action: suspend (String, String) -> VideoLoadingState<T>,
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.body()?.string()
         if (requestResult.isSuccessful && resultBody != null) {
-            emit(action.invoke(resultBody))
+            val url = requestResult.raw().request.url.toString()
+            emit(action.invoke(url, resultBody))
         } else {
             requestResult.throwRequestException()
         }

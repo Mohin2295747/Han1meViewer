@@ -216,15 +216,15 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
     fun handleCommentLike(args: VideoCommentArgs) {
         if (args.isPositive) {
             if (args.comment.post.likeCommentStatus) {
-                getApplication<Application>().showShortToast(R.string.cancel_thumb_up_success)
+                application.showShortToast(R.string.cancel_thumb_up_success)
             } else {
-                getApplication<Application>().showShortToast(R.string.thumb_up_success)
+                application.showShortToast(R.string.thumb_up_success)
             }
         } else {
             if (args.comment.post.unlikeCommentStatus) {
-                getApplication<Application>().showShortToast(R.string.cancel_thumb_down_success)
+                application.showShortToast(R.string.cancel_thumb_down_success)
             } else {
-                getApplication<Application>().showShortToast(R.string.thumb_down_success)
+                application.showShortToast(R.string.thumb_down_success)
             }
         }
     }

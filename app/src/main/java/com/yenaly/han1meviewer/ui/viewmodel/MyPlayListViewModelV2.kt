@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -40,7 +41,6 @@ class MyPlayListViewModelV2 : ViewModel() {
     val playlistFlow = _playlistFlow.asStateFlow()
     private val _currentListInfo = MutableStateFlow<Pair<String, String>?>(null)
     val currentListInfo = _currentListInfo.asStateFlow()
-
 
     private val _refreshCompleted = MutableSharedFlow<Unit>()
     val refreshCompleted: SharedFlow<Unit> = _refreshCompleted.asSharedFlow()
