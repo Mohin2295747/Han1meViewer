@@ -106,32 +106,20 @@ class PageStorageFragment : Fragment() {
             stats.unchanged
         )
         
-        // Update status counts with colors - check if these views exist in your layout
-        // If these TextView IDs don't exist in your layout, remove these lines
-        binding.translatedCount?.let {
-            it.text = stats.translated.toString()
-            it.setTextColor(ContextCompat.getColor(requireContext(), R.color.green))
-        }
+        // Update status counts with colors
+        binding.translatedCount.text = stats.translated.toString()
+        binding.failedCount.text = stats.failed.toString()
+        binding.staleCount.text = stats.stale.toString()
+        binding.unchangedCount.text = stats.unchanged.toString()
         
-        binding.failedCount?.let {
-            it.text = stats.failed.toString()
-            it.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
-        }
-        
-        binding.staleCount?.let {
-            it.text = stats.stale.toString()
-            it.setTextColor(ContextCompat.getColor(requireContext(), R.color.orange))
-        }
-        
-        binding.unchangedCount?.let {
-            it.text = stats.unchanged.toString()
-            it.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
-        }
+        // Set text colors based on status
+        binding.translatedCount.setTextColor(ContextCompat.getColor(requireContext(), R.color.green))
+        binding.failedCount.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+        binding.staleCount.setTextColor(ContextCompat.getColor(requireContext(), R.color.orange))
+        binding.unchangedCount.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
     }
     
     private fun openPageDetail(url: String) {
-        // You can implement a detail view here
-        // For now, just show a toast
         showToast("Page: $url")
     }
     
@@ -143,7 +131,7 @@ class PageStorageFragment : Fragment() {
             
             if (success) {
                 showToast("Retranslation started for: $url")
-                loadPages() // Refresh the list
+                loadPages()
             } else {
                 showToast("Failed to retranslate: $url")
             }
@@ -160,12 +148,15 @@ class PageStorageFragment : Fragment() {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle(R.string.clear_all_pages)
             .setMessage(R.string.clear_all_pages_confirmation)
-            .setPositiveButton(R.string.clear) { _, _ ->
+            .setPositiveButton(R.string.clear) { dialog, _ ->
                 PageStorageManager.clearAll()
                 loadPages()
                 showToast(getString(R.string.all_pages_cleared))
+                dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel, null)
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
     

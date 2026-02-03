@@ -309,7 +309,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         // Navigate to PageStorageFragment
         val fragment = PageStorageFragment()
         parentFragmentManager.beginTransaction()
-            .replace(R.id.settings_container, fragment) // Adjust container ID based on your layout
+            .replace(R.id.fcv_settings, fragment)
             .addToBackStack(null)
             .commit()
     }

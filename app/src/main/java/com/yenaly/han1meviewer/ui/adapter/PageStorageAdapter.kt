@@ -1,6 +1,7 @@
 package com.yenaly.han1meviewer.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -9,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yenaly.han1meviewer.R
 import com.yenaly.han1meviewer.databinding.ItemPageStorageBinding
 import com.yenaly.han1meviewer.logic.model.PageVersion
-import com.yenaly.han1meviewer.util.formatDateTime
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class PageStorageAdapter(
     private val onItemClick: (String) -> Unit,
@@ -41,31 +44,31 @@ class PageStorageAdapter(
                 // Set status with icon and color
                 when (pageVersion.translationStatus) {
                     PageVersion.TranslationStatus.TRANSLATED -> {
-                        ivStatus.setImageResource(R.drawable.ic_check_circle)
+                        ivStatus.setImageResource(R.drawable.ic_baseline_check_circle_24)
                         tvStatus.text = "✓ Translated"
                         tvStatus.setTextColor(ContextCompat.getColor(root.context, R.color.green))
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.translated_bg))
                     }
                     PageVersion.TranslationStatus.FAILED -> {
-                        ivStatus.setImageResource(R.drawable.ic_error)
+                        ivStatus.setImageResource(R.drawable.ic_baseline_error_outline_24)
                         tvStatus.text = "✗ Failed"
                         tvStatus.setTextColor(ContextCompat.getColor(root.context, R.color.red))
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.failed_bg))
                     }
                     PageVersion.TranslationStatus.STALE -> {
-                        ivStatus.setImageResource(R.drawable.ic_warning)
+                        ivStatus.setImageResource(R.drawable.ic_baseline_warning_24)
                         tvStatus.text = "↻ Needs Update"
                         tvStatus.setTextColor(ContextCompat.getColor(root.context, R.color.orange))
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.stale_bg))
                     }
                     PageVersion.TranslationStatus.UNCHANGED -> {
-                        ivStatus.setImageResource(R.drawable.ic_check_circle)
+                        ivStatus.setImageResource(R.drawable.ic_baseline_check_circle_24)
                         tvStatus.text = "✓ Unchanged"
                         tvStatus.setTextColor(ContextCompat.getColor(root.context, R.color.blue))
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.unchanged_bg))
                     }
                     else -> {
-                        ivStatus.setImageResource(R.drawable.ic_pending)
+                        ivStatus.setImageResource(R.drawable.ic_baseline_access_time_24)
                         tvStatus.text = "⏳ Pending"
                         tvStatus.setTextColor(ContextCompat.getColor(root.context, R.color.gray))
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.pending_bg))
@@ -83,6 +86,15 @@ class PageStorageAdapter(
                     PageVersion.TranslationStatus.STALE -> View.VISIBLE
                     else -> View.GONE
                 }
+            }
+        }
+        
+        private fun formatDateTime(timestamp: Long): String {
+            return try {
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                sdf.format(Date(timestamp))
+            } catch (e: Exception) {
+                "Unknown"
             }
         }
     }

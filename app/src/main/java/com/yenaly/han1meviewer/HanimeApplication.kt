@@ -17,6 +17,7 @@ import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.yenaly.han1meviewer.logic.network.HProxySelector
+import com.yenaly.han1meviewer.logic.PageStorageManager
 import com.yenaly.han1meviewer.ui.viewmodel.AppViewModel
 import com.yenaly.han1meviewer.util.AnimeShaders
 import com.yenaly.han1meviewer.util.ThemeUtils
@@ -120,7 +121,7 @@ class HanimeApplication : YenalyApplication() {
     }
 
     private fun cleanupOldPages() {
-        val thirtyDaysAgo = System.currentTimeMillis() - (5L * 24 * 60 * 60 * 1000)
+        val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
         val pages = PageStorageManager.getAllPageVersions()
     
         pages.forEach { page ->
