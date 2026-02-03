@@ -149,6 +149,8 @@ class HomeSettingsFragment : YenalySettingsFragment(R.xml.settings_home) {
             by safePreference<MaterialSwitchPreference>(ALLOW_RESUME_PLAYBACK)
     private val disableMobileDataWarning
             by safePreference<MaterialSwitchPreference>(DISABLE_MOBILE_DATA_WARNING)
+    private val translationSettings
+            by safePreference<Preference>("translation_settings")
 
     private var checkUpdateTimes = 0
 
@@ -406,6 +408,10 @@ class HomeSettingsFragment : YenalySettingsFragment(R.xml.settings_home) {
             } else {
                 isVisible = false
             }
+        }
+        translationSettings?.setOnPreferenceClickListener {
+            SettingsRouter.with(this).navigateWithinSettings(R.id.translationSettingsFragment)
+            return@setOnPreferenceClickListener true
         }
         useCIUpdateChannel.apply {
             setOnPreferenceChangeListener { _, _ ->

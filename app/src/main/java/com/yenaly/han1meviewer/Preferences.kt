@@ -274,4 +274,45 @@ object Preferences {
             )
             return SpeedLimitInterceptor.SPEED_BYTES[index]
         }
+
+    // ============ Translation Settings ============
+
+    /**
+     * Whether translation feature is enabled
+     */
+    var isTranslationEnabled: Boolean
+        get() = preferenceSp.getBoolean("translation_enabled", true)
+        set(value) = preferenceSp.edit().putBoolean("translation_enabled", value).apply()
+
+    /**
+     * Translation key for the turbopages.org proxy
+     */
+    var translationKey: String?
+        get() = preferenceSp.getString("translation_key", "zh-en.en.67772d43-6981727d-8453ce13-74722d776562")
+        set(value) = preferenceSp.edit().putString("translation_key", value).apply()
+
+    /**
+     * Last time translation was updated (for cache management)
+     */
+    var translationLastUpdate: Long
+        get() = preferenceSp.getLong("translation_last_update", 0)
+        set(value) = preferenceSp.edit().putLong("translation_last_update", value).apply()
+
+    /**
+     * Whether to wait for translation before showing content
+     */
+    val translationWaitEnabled: Boolean
+        get() = preferenceSp.getBoolean("translation_wait_enabled", true)
+
+    /**
+     * Translation delay in milliseconds
+     */
+    val translationDelayMs: Long
+        get() = preferenceSp.getString("translation_delay_ms", "2000")?.toLongOrNull() ?: 2000L
+
+    /**
+     * Maximum retry attempts for translation
+     */
+    val translationMaxRetries: Int
+        get() = preferenceSp.getInt("translation_max_retries", 2)
 }

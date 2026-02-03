@@ -91,6 +91,12 @@
             app:key="apply_deep_links"
             app:summary="@string/apply_deep_links_summary"
             app:title="@string/apply_deep_links" />
+            
+        <Preference
+            app:icon="@drawable/ic_baseline_update_24"
+            app:key="translation_settings"
+            app:title="@string/translation_settings"
+            app:summary="@string/translation_settings_summary" />
 
     </PreferenceCategory>
 

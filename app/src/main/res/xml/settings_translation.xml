@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/translation_general_settings">
+
+        <SwitchPreferenceCompat
+            app:key="translation_enabled"
+            app:title="@string/translation_enable"
+            app:summary="@string/translation_enable_summary"
+            app:defaultValue="true" />
+
+        <Preference
+            app:key="translation_key"
+            app:title="@string/translation_key"
+            app:summary="@string/translation_key_default" />
+
+        <SwitchPreferenceCompat
+            app:key="translation_wait_enabled"
+            app:title="@string/translation_wait_enabled"
+            app:summary="@string/translation_wait_enabled_summary"
+            app:defaultValue="true" />
+
+        <Preference
+            app:key="translation_delay_ms"
+            app:title="@string/translation_delay"
+            app:summary="@string/translation_delay_summary" />
+
+        <Preference
+            app:key="translation_max_retries"
+            app:title="@string/translation_max_retries"
+            app:summary="@string/translation_max_retries_summary" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/translation_actions">
+
+        <Preference
+            app:key="clear_translation_cache"
+            app:title="@string/clear_translation_cache"
+            app:summary="@string/clear_translation_cache_summary" />
+
+        <Preference
+            app:key="restart_app"
+            app:title="@string/restart_app"
+            app:summary="@string/translation_restart_summary" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -91,7 +91,7 @@ val HANIME_BASE_URL = Preferences.baseUrl
  */
 object HanimeConstants {
     val HANIME_HOSTNAME = arrayOf("hanime1.me","hanime1.com","hanimeone.me","javchu.com")
-    val HANIME_URL = arrayOf("https://translated.turbopages.org/proxy_u/zh-en.en.1d929ddc-6980d1a4-b38efd42-74722d776562/https/hanime1.me/","https://hanime1.com/","https://hanimeone.me/","https://javchu.com/")
+    val HANIME_URL = arrayOf("https://hanime1.me/","https://hanime1.com/","https://hanimeone.me/","https://javchu.com/")
 }
 
 @JvmField

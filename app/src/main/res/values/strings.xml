@@ -558,4 +558,44 @@
     <string name="animation_2_5d" translatable="false">2.5D</string>
     <string name="ai_generated">AI生成</string>
     <string name="mmd" translatable="false">MMD</string>
+    <!-- Translation Settings -->
+    <string name="translation_general_settings">General Settings</string>
+    <string name="translation_enable">Enable Translation</string>
+    <string name="translation_enable_summary">Translate Chinese text to English automatically</string>
+    <string name="translation_key">Translation Key</string>
+    <string name="translation_key_default">Default key (tap to edit)</string>
+    <string name="translation_key_example">Example: zh-en.en.67772d43-6981727d-8453ce13-74722d776562</string>
+    <string name="translation_key_hint">Enter translation key</string>
+    <string name="translation_key_description">Enter the translation key from turbopages.org. This key is used to access the translation proxy.</string>
+    <string name="translation_key_empty_warning">Translation key cannot be empty</string>
+    <string name="translation_key_saved">Translation key saved</string>
+    <string name="translation_key_reset">Translation key reset to default</string>
+    
+    <string name="translation_wait_enabled">Wait for Translation</string>
+    <string name="translation_wait_enabled_summary">Wait for translation to complete before showing content</string>
+    
+    <string name="translation_delay">Translation Delay</string>
+    <string name="translation_delay_summary">%d ms</string>
+    <string name="translation_delay_hint">Delay in milliseconds</string>
+    <string name="translation_delay_description">Time to wait before fetching translation (network dependent)</string>
+    <string name="translation_delay_invalid">Please enter a valid delay (0-10000 ms)</string>
+    <string name="translation_delay_saved">Translation delay saved</string>
+    
+    <string name="translation_max_retries">Max Retry Attempts</string>
+    <string name="translation_max_retries_summary">%d attempts</string>
+    <string name="translation_max_retries_hint">Number of retry attempts</string>
+    <string name="translation_max_retries_description">Maximum number of retry attempts if translation fails</string>
+    <string name="translation_max_retries_invalid">Please enter a valid number (0-10)</string>
+    <string name="translation_max_retries_saved">Max retries saved</string>
+    
+    <string name="translation_actions">Actions</string>
+    <string name="clear_translation_cache">Clear Translation Cache</string>
+    <string name="clear_translation_cache_summary">Clear cached translations</string>
+    <string name="translation_cache_cleared">Translation cache cleared</string>
+    <string name="translation_settings">Translation Settings</string>
+    <string name="translation_settings_summary">Translate Chinese text to English</string>
+
+    <string name="restart_app">Restart App</string>
+    <string name="translation_restart_summary">Restart app after changing translation settings</string>
+    <string name="translation_restart_message">Some translation settings require a restart to take effect. Restart now?</string>
 </resources>

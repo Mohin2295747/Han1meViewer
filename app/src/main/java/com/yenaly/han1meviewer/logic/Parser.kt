@@ -8,6 +8,7 @@ import com.yenaly.han1meviewer.HanimeResolution
 import com.yenaly.han1meviewer.LOCAL_DATE_FORMAT
 import com.yenaly.han1meviewer.Preferences
 import com.yenaly.han1meviewer.Preferences.isAlreadyLogin
+import com.yenaly.han1meviewer.logic.TranslationManager
 import com.yenaly.han1meviewer.logic.exception.ParseException
 import com.yenaly.han1meviewer.logic.model.HanimeInfo
 import com.yenaly.han1meviewer.logic.model.HanimePreview
@@ -51,9 +52,10 @@ object Parser {
             ?: throw ParseException("Can't find csrf token from login page.")
     }
 
-    fun homePageVer2(body: String): WebsiteState<HomePage> {
+    suspend fun homePageVer2(url: String, body: String): WebsiteState<HomePage> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
         val isAVSite = Preferences.baseUrl == HANIME_URL[3]
-        val parseBody = Jsoup.parse(body).body()
+        val parseBody = Jsoup.parse(translatedBody).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value") // csrf token
         val homePageParse = parseBody.select("div[id=home-rows-wrapper] > div")
 
@@ -202,8 +204,9 @@ object Parser {
         return resultList
     }
 
-    fun hanimeSearch(body: String): PageLoadingState<MutableList<HanimeInfo>> {
-        val parseBody = Jsoup.parse(body).body()
+    suspend fun hanimeSearch(url: String, body: String): PageLoadingState<MutableList<HanimeInfo>> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val parseBody = Jsoup.parse(translatedBody).body()
         val allContentsClass =
             parseBody.getElementsByClass("content-padding-new").firstOrNull()
         val allSimplifiedContentsClass =
@@ -306,8 +309,9 @@ object Parser {
         return PageLoadingState.Success(hanimeSearchList)
     }
 
-    fun hanimeVideoVer2(body: String): VideoLoadingState<HanimeVideo> {
-        val parseBody = Jsoup.parse(body).body()
+    suspend fun hanimeVideoVer2(url: String, body: String): VideoLoadingState<HanimeVideo> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val parseBody = Jsoup.parse(translatedBody).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value") // csrf token
 
         val currentUserId =
@@ -542,8 +546,9 @@ object Parser {
         )
     }
 
-    fun hanimePreview(body: String): WebsiteState<HanimePreview> {
-        val parseBody = Jsoup.parse(body).body()
+    suspend fun hanimePreview(url: String, body: String): WebsiteState<HanimePreview> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val parseBody = Jsoup.parse(translatedBody).body()
 
         // latest hanime
         val latestHanimeList = mutableListOf<HanimeInfo>()
@@ -640,8 +645,9 @@ object Parser {
         )
     }
 
-    fun myListItems(body: String): PageLoadingState<MyListItems<HanimeInfo>> {
-        val parseBody = Jsoup.parse(body).body()
+    suspend fun myListItems(url: String, body: String): PageLoadingState<MyListItems<HanimeInfo>> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val parseBody = Jsoup.parse(translatedBody).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value")
         val desc = parseBody.getElementById("playlist-show-description")?.ownText()
         val allHanimeClass = parseBody.getElementsByClass("horizontal-row").firstOrNull()
@@ -656,8 +662,9 @@ object Parser {
         )
     }
 
-    fun myPlayListItems(body: String): PageLoadingState<MyListItems<HanimeInfo>> {
-        val parseBody = Jsoup.parse(body).body()
+    suspend fun myPlayListItems(url: String, body: String): PageLoadingState<MyListItems<HanimeInfo>> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val parseBody = Jsoup.parse(translatedBody).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value")
         val desc = parseBody.select("p.playlist-description").first()?.text()
         val allHanimeClass = parseBody.getElementsByClass("playlist-video-list").firstOrNull()
@@ -673,8 +680,9 @@ object Parser {
     }
 
 
-    fun playlists(body: String): WebsiteState<Playlists> {
-        val parseBody = Jsoup.parse(body).body()
+    suspend fun playlists(url: String, body: String): WebsiteState<Playlists> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val parseBody = Jsoup.parse(translatedBody).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value")
         val lists = parseBody.getElementsByClass("user-tab-item-wrapper")
         val playlists = mutableListOf<Playlists.Playlist>()
@@ -694,8 +702,9 @@ object Parser {
     }
 
     @SuppressLint("BuildListAdds")
-    fun comments(body: String): WebsiteState<VideoComments> {
-        val jsonObject = JSONObject(body)
+    suspend fun comments(url: String, body: String): WebsiteState<VideoComments> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val jsonObject = JSONObject(translatedBody)
         val commentBody = jsonObject.get("comments").toString()
         val parseBody = Jsoup.parse(commentBody).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value")
@@ -779,8 +788,9 @@ object Parser {
         )
     }
 
-    fun commentReply(body: String): WebsiteState<VideoComments> {
-        val jsonObject = JSONObject(body)
+    suspend fun commentReply(url: String, body: String): WebsiteState<VideoComments> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val jsonObject = JSONObject(translatedBody)
         val replyBody = jsonObject.get("replies").toString()
         val replyList = mutableListOf<VideoComments.VideoComment>()
         val parseBody = Jsoup.parse(replyBody).body()
@@ -875,8 +885,9 @@ object Parser {
         }
     }
 
-    fun getMySubscriptions(body: String): WebsiteState<MySubscriptions> {
-        val parseBody = Jsoup.parse(body).body()
+    suspend fun getMySubscriptions(url: String, body: String): WebsiteState<MySubscriptions> {
+        val translatedBody = TranslationManager.getTranslatedContent(url, body)
+        val parseBody = Jsoup.parse(translatedBody).body()
         val maxPage = parseMaxPage(parseBody)
         Log.i("getMySubscriptions", "MaxPageList=$maxPage")
         val subscriptionsRoot = parseBody.selectFirst("div.subscriptions-nav")
