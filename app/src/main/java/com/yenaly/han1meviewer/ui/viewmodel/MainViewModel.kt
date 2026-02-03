@@ -55,7 +55,7 @@ class MainViewModel(application: Application) : YenalyViewModel(application) {
 
     fun getHomePage() {
         viewModelScope.launch {
-            NetworkRepo.getHomePage().collect<HomePage> { homePage ->
+            NetworkRepo.getHomePage().collect { homePage ->
                 if (homePage is WebsiteState.Success) {
                     csrfToken = homePage.info.csrfToken
                     homePage.info.userId.takeIf { it.isNotEmpty() }?.let { id ->

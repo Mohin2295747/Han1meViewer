@@ -141,6 +141,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     translationKeyPref.summary = getTranslationKeySummary()
                     requireContext().showToast(getString(R.string.translation_key_saved))
                 }
+                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
@@ -179,6 +180,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     translationDelayPref.summary = getString(R.string.translation_delay_summary, newDelay)
                     requireContext().showToast(getString(R.string.translation_delay_saved))
                 }
+                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
@@ -211,6 +213,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     translationMaxRetriesPref.summary = getString(R.string.translation_max_retries_summary, newRetries)
                     requireContext().showToast(getString(R.string.translation_max_retries_saved))
                 }
+                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()

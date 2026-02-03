@@ -397,30 +397,6 @@ object NetworkRepo {
     }.flowOn(Dispatchers.IO)
 
     /**
-     * 用于单网页的情况
-     *
-     * @param permittedSuccessCode 用于处理特殊情况，比如[NetworkRepo.modifyPlaylist]需要302成功
-     */
-    private inline fun <reified T> websiteIOFlow(
-        crossinline request: suspend () -> Response<ResponseBody>,
-        permittedSuccessCode: IntArray? = null,
-        noinline action: suspend (String, String) -> WebsiteState<T>? = null,
-    ) = flow {
-        val requestResult = request.invoke()
-        val resultBody = requestResult.body()?.string()
-        val permitted = permittedSuccessCode?.contains(requestResult.code()) == true
-        if ((permitted || requestResult.isSuccessful)) {
-            val url = requestResult.raw().request.url.toString()
-            val state = action?.invoke(url, resultBody ?: EMPTY_STRING)
-            state?.let { emit(it) }
-        } else {
-            requestResult.throwRequestException()
-        }
-    }.catch { e ->
-        emit(WebsiteState.Error(handleException(e)))
-    }.flowOn(Dispatchers.IO)
-
-    /**
      * 用于有page分页的情况
      */
     private inline fun <reified T> pageIOFlow(
@@ -439,26 +415,6 @@ object NetworkRepo {
     }.flowOn(Dispatchers.IO)
 
     /**
-     * 用于有page分页的情况
-     */
-    private inline fun <reified T> pageIOFlow(
-        crossinline request: suspend () -> Response<ResponseBody>,
-        noinline action: suspend (String, String) -> PageLoadingState<T>? = null,
-    ) = flow {
-        val requestResult = request.invoke()
-        val resultBody = requestResult.body()?.string()
-        if (requestResult.isSuccessful && resultBody != null) {
-            val url = requestResult.raw().request.url.toString()
-            val state = action?.invoke(url, resultBody)
-            state?.let { emit(it) }
-        } else {
-            requestResult.throwRequestException()
-        }
-    }.catch { e ->
-        emit(PageLoadingState.Error(handleException(e)))
-    }.flowOn(Dispatchers.IO)
-
-    /**
      * 用于影片界面
      */
     private inline fun <reified T> videoIOFlow(
@@ -469,26 +425,6 @@ object NetworkRepo {
         val resultBody = requestResult.body()?.string()
         if (requestResult.isSuccessful && resultBody != null) {
             emit(action.invoke(resultBody))
-        } else {
-            requestResult.throwRequestException()
-        }
-    }.catch { e ->
-        emit(VideoLoadingState.Error(handleException(e)))
-    }.flowOn(Dispatchers.IO)
-
-    /**
-     * 用于影片界面
-     */
-    private inline fun <reified T> videoIOFlow(
-        crossinline request: suspend () -> Response<ResponseBody>,
-        noinline action: suspend (String, String) -> VideoLoadingState<T>? = null,
-    ) = flow {
-        val requestResult = request.invoke()
-        val resultBody = requestResult.body()?.string()
-        if (requestResult.isSuccessful && resultBody != null) {
-            val url = requestResult.raw().request.url.toString()
-            val state = action?.invoke(url, resultBody)
-            state?.let { emit(it) }
         } else {
             requestResult.throwRequestException()
         }
