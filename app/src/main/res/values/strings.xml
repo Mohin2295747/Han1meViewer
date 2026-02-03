@@ -20,7 +20,6 @@
     <string name="cancel">取消</string>
     <string name="pair_widely">模糊搜尋</string>
     <string name="pair_widely_alert">較多結果，較不精準。配對所有包含任何一個選擇的標籤的影片，而非全部標籤</string>
-    <string name="reset">重設</string>
     <string name="save">保存</string>
     <string name="video_attr">影片屬性</string>
     <string name="relationship">人物關係</string>
