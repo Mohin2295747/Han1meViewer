@@ -14,8 +14,6 @@ import com.yenaly.han1meviewer.logic.state.WebsiteState
 import com.yenaly.han1meviewer.ui.fragment.video.CommentFragment
 import com.yenaly.han1meviewer.util.loadAssetAs
 import com.yenaly.yenaly_libs.base.YenalyViewModel
-import com.yenaly.yenaly_libs.utils.showShortToast
-import com.yenaly.yenaly_libs.utils.unsafeLazy
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -213,18 +211,19 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
     }
 
     fun handleCommentLike(args: VideoCommentArgs) {
+        // Use application context to show toast
         val context = application.applicationContext
         if (args.isPositive) {
             if (args.comment.post.likeCommentStatus) {
-                context.showShortToast(R.string.cancel_thumb_up_success)
+                android.widget.Toast.makeText(context, R.string.cancel_thumb_up_success, android.widget.Toast.LENGTH_SHORT).show()
             } else {
-                context.showShortToast(R.string.thumb_up_success)
+                android.widget.Toast.makeText(context, R.string.thumb_up_success, android.widget.Toast.LENGTH_SHORT).show()
             }
         } else {
             if (args.comment.post.unlikeCommentStatus) {
-                context.showShortToast(R.string.cancel_thumb_down_success)
+                android.widget.Toast.makeText(context, R.string.cancel_thumb_down_success, android.widget.Toast.LENGTH_SHORT).show()
             } else {
-                context.showShortToast(R.string.thumb_down_success)
+                android.widget.Toast.makeText(context, R.string.thumb_down_success, android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -142,18 +142,17 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     translationKeyPref.summary = getTranslationKeySummary()
                     showToast(getString(R.string.translation_key_saved))
                 }
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
             .setNeutralButton(R.string.reset_to_default) { dialog, _ ->
                 Preferences.translationKey = "zh-en.en.67772d43-6981727d-8453ce13-74722d776562"
                 translationKeyPref.summary = getTranslationKeySummary()
                 showToast(getString(R.string.translation_key_reset))
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
-            .create()
             .show()
     }
 
@@ -180,12 +179,11 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     translationDelayPref.summary = getString(R.string.translation_delay_summary, newDelay)
                     showToast(getString(R.string.translation_delay_saved))
                 }
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
-            .create()
             .show()
     }
 
@@ -212,12 +210,11 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     translationMaxRetriesPref.summary = getString(R.string.translation_max_retries_summary, newRetries)
                     showToast(getString(R.string.translation_max_retries_saved))
                 }
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
-            .create()
             .show()
     }
 
@@ -235,12 +232,11 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     startActivity(intent)
                 }
                 android.os.Process.killProcess(android.os.Process.myPid())
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
-                (dialog as AlertDialog).dismiss()
+                dialog.dismiss()
             }
-            .create()
             .show()
     }
 

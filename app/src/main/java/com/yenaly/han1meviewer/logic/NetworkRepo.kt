@@ -304,12 +304,12 @@ object NetworkRepo {
                 reportableType = reportableType,
                 reason = reason
             )
-        },
-        action = Parser::reportCommentResponse
-    )
-
+        }
+    ) { _, body ->
+    // Use the action parameter instead of direct function reference
+        Parser.reportCommentResponse(body ?: EMPTY_STRING)
+    }
     //</editor-fold>
-
     //<editor-fold desc="Subscription">
 
     fun subscribeArtist(
