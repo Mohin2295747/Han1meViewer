@@ -120,7 +120,7 @@ object NetworkRepo {
                     throw IllegalArgumentException("typeOrId must be String or MyListType")
             }
         }
-    ) { deleteBody ->
+    ) { _, deleteBody ->
         val jsonObject = JSONObject(deleteBody)
         val returnVideoCode = jsonObject.get("video_id").toString()
         if (videoCode == returnVideoCode) {
@@ -147,8 +147,8 @@ object NetworkRepo {
                 token, currentUserId
             )
         }
-    ) {
-        Log.d("add_to_fav_body", it)
+    ) { _, _ ->
+        Log.d("add_to_fav_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(likeStatus)
     }
 
@@ -164,8 +164,8 @@ object NetworkRepo {
             )
         },
         permittedSuccessCode = intArrayOf(500)
-    ) {
-        Log.d("create_playlist_body", it)
+    ) { _, _ ->
+        Log.d("create_playlist_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(Unit)
     }
 
@@ -181,8 +181,8 @@ object NetworkRepo {
                 csrfToken, listCode, videoCode, isChecked
             )
         }
-    ) {
-        Log.d("add_to_playlist_body", it)
+    ) { _, _ ->
+        Log.d("add_to_playlist_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(position)
     }
 
@@ -201,8 +201,8 @@ object NetworkRepo {
             )
         },
         permittedSuccessCode = intArrayOf(302)
-    ) {
-        Log.d("modify_playlist_body", it)
+    ) { _, _ ->
+        Log.d("modify_playlist_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(
             ModifiedPlaylistArgs(
                 title = title, desc = description, isDeleted = delete,
@@ -237,8 +237,8 @@ object NetworkRepo {
                 type, targetUserId, text
             )
         }
-    ) {
-        Log.d("post_comment_body", it)
+    ) { _, _ ->
+        Log.d("post_comment_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(Unit)
     }
 
@@ -252,8 +252,8 @@ object NetworkRepo {
                 csrfToken, replyCommentId, text
             )
         }
-    ) {
-        Log.d("post_comment_reply_body", it)
+    ) { _, _ ->
+        Log.d("post_comment_reply_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(Unit)
     }
 
@@ -278,8 +278,8 @@ object NetworkRepo {
                 if (unlikeCommentStatus) 1 else 0
             )
         }
-    ) {
-        Log.d("like_comment_body", it)
+    ) { _, _ ->
+        Log.d("like_comment_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(
             VideoCommentArgs(
                 commentPosition, isPositive, comment
@@ -294,7 +294,7 @@ object NetworkRepo {
         redirectUrl: String,
         reportableType: String?,
         reportableId: String?
-    ) = websiteIOFlow(
+    ) = websiteIOFlow<String>(
         request = {
             HanimeNetwork.commentService.submitReport(
                 userId = currentUserId,
@@ -325,8 +325,8 @@ object NetworkRepo {
                 if (status) "" else "1"
             )
         }
-    ) {
-        Log.d("subscribe_artist_body", it)
+    ) { _, _ ->
+        Log.d("subscribe_artist_body", "Request completed")
         return@websiteIOFlow WebsiteState.Success(status)
     }
 

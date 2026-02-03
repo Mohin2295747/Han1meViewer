@@ -12,7 +12,6 @@ import com.yenaly.han1meviewer.logic.model.VideoCommentArgs
 import com.yenaly.han1meviewer.logic.model.VideoComments
 import com.yenaly.han1meviewer.logic.state.WebsiteState
 import com.yenaly.han1meviewer.ui.fragment.video.CommentFragment
-import com.yenaly.han1meviewer.ui.viewmodel.AppViewModel
 import com.yenaly.han1meviewer.util.loadAssetAs
 import com.yenaly.yenaly_libs.base.YenalyViewModel
 import com.yenaly.yenaly_libs.utils.showShortToast
@@ -214,17 +213,18 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
     }
 
     fun handleCommentLike(args: VideoCommentArgs) {
+        val context = application.applicationContext
         if (args.isPositive) {
             if (args.comment.post.likeCommentStatus) {
-                application.showShortToast(R.string.cancel_thumb_up_success)
+                context.showShortToast(R.string.cancel_thumb_up_success)
             } else {
-                application.showShortToast(R.string.thumb_up_success)
+                context.showShortToast(R.string.thumb_up_success)
             }
         } else {
             if (args.comment.post.unlikeCommentStatus) {
-                application.showShortToast(R.string.cancel_thumb_down_success)
+                context.showShortToast(R.string.cancel_thumb_down_success)
             } else {
-                application.showShortToast(R.string.thumb_down_success)
+                context.showShortToast(R.string.thumb_down_success)
             }
         }
     }
