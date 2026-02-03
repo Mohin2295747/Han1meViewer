@@ -606,8 +606,6 @@
 <string name="view_stored_pages">View Stored Pages</string>
 <string name="view_stored_pages_summary">View and manage translated pages</string>
 <string name="page_storage_stats">Total: %1$d\nTranslated: %2$d\nFailed: %3$d\nStale: %4$d\nUnchanged: %5$d</string>
-
-<string name="clear_all_pages_confirmation">Delete all stored pages? This cannot be undone.</string>
 <string name="page_detail">Page Details</string>
 <string name="view_html">View HTML</string>
 <string name="view_diff">View Changes</string>
