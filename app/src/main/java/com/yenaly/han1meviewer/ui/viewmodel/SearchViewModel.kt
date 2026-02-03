@@ -124,15 +124,27 @@ class SearchViewModel(
                 if (prev is PageLoadingState.Loading) _searchFlow.value = emptyList()
                 _searchFlow.update { prevList ->
                     when (state) {
-//                        is PageLoadingState.Success -> prevList + state.info
                         is PageLoadingState.Success -> {
                             val list = state.info
                             val codes = list.map { it.videoCode }
-                            val watchedCodes= withContext(Dispatchers.IO) {
+                            val watchedCodes = withContext(Dispatchers.IO) {
                                 DatabaseRepo.WatchHistory.getWatched(codes).toSet()
                             }
                             val updatedList = list.map { item ->
-                                item.copy(watched = watchedCodes.contains(item.videoCode))
+                                // Create a new HanimeInfo with the watched status
+                                HanimeInfo(
+                                    title = item.title,
+                                    coverUrl = item.coverUrl,
+                                    videoCode = item.videoCode,
+                                    duration = item.duration,
+                                    currentArtist = item.currentArtist,
+                                    views = item.views,
+                                    uploadTime = item.uploadTime,
+                                    genre = item.genre,
+                                    itemType = item.itemType,
+                                    reviews = item.reviews,
+                                    watched = watchedCodes.contains(item.videoCode)
+                                )
                             }
                             prevList + updatedList
                         }

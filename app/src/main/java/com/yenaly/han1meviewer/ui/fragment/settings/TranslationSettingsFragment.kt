@@ -1,6 +1,9 @@
 package com.yenaly.han1meviewer.ui.fragment.settings
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -83,7 +86,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
 
         clearCachePref.setOnPreferenceClickListener {
             TranslationManager.clearCache()
-            showToast(getString(R.string.translation_cache_cleared))
+            requireContext().showToast(getString(R.string.translation_cache_cleared))
             true
         }
 
@@ -120,111 +123,120 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
     private fun showTranslationKeyDialog() {
         val currentKey = Preferences.translationKey ?: "zh-en.en.67772d43-6981727d-8453ce13-74722d776562"
         
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_translation_key_input, null)
+        val editText = dialogView.findViewById<EditText>(R.id.translation_key_input)
+        editText.setText(currentKey)
+        editText.setSelection(currentKey.length)
+        
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_key)
             .setMessage(R.string.translation_key_description)
-            .setView(R.layout.dialog_translation_key_input)
+            .setView(dialogView)
             .setPositiveButton(R.string.save) { dialog, _ ->
-                val dialogView = (dialog as androidx.appcompat.app.AlertDialog).findViewById<android.widget.EditText>(R.id.translation_key_input)
-                val newKey = dialogView?.text?.toString()?.trim()
+                val newKey = editText.text?.toString()?.trim()
                 if (newKey.isNullOrBlank()) {
-                    showToast(getString(R.string.translation_key_empty_warning))
+                    requireContext().showToast(getString(R.string.translation_key_empty_warning))
                 } else {
                     Preferences.translationKey = newKey
                     translationKeyPref.summary = getTranslationKeySummary()
-                    showToast(getString(R.string.translation_key_saved))
+                    requireContext().showToast(getString(R.string.translation_key_saved))
                 }
             }
-            .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.reset_to_default) { _, _ ->
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setNeutralButton(R.string.reset_to_default) { dialog, _ ->
                 Preferences.translationKey = "zh-en.en.67772d43-6981727d-8453ce13-74722d776562"
                 translationKeyPref.summary = getTranslationKeySummary()
-                showToast(getString(R.string.translation_key_reset))
+                requireContext().showToast(getString(R.string.translation_key_reset))
+                dialog.dismiss()
             }
             .show()
-            ?.findViewById<android.widget.EditText>(R.id.translation_key_input)
-            ?.apply {
-                setText(currentKey)
-                setSelection(currentKey.length)
-            }
     }
 
     private fun showTranslationDelayDialog() {
         val currentDelay = Preferences.translationDelayMs.toString()
         
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_number_input, null)
+        val editText = dialogView.findViewById<EditText>(R.id.number_input)
+        editText.setText(currentDelay)
+        editText.hint = getString(R.string.translation_delay_hint)
+        editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+        editText.setSelection(currentDelay.length)
+        
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_delay)
             .setMessage(R.string.translation_delay_description)
-            .setView(R.layout.dialog_number_input)
+            .setView(dialogView)
             .setPositiveButton(R.string.save) { dialog, _ ->
-                val dialogView = (dialog as androidx.appcompat.app.AlertDialog).findViewById<android.widget.EditText>(R.id.number_input)
-                val newDelay = dialogView?.text?.toString()?.toLongOrNull()
+                val newDelay = editText.text?.toString()?.toLongOrNull()
                 if (newDelay == null || newDelay < 0 || newDelay > 10000) {
-                    showToast(getString(R.string.translation_delay_invalid))
+                    requireContext().showToast(getString(R.string.translation_delay_invalid))
                 } else {
                     Preferences.preferenceSp.edit()
                         .putString(TRANSLATION_DELAY_MS, newDelay.toString())
                         .apply()
                     translationDelayPref.summary = getString(R.string.translation_delay_summary, newDelay)
-                    showToast(getString(R.string.translation_delay_saved))
+                    requireContext().showToast(getString(R.string.translation_delay_saved))
                 }
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-            ?.findViewById<android.widget.EditText>(R.id.number_input)
-            ?.apply {
-                setText(currentDelay)
-                hint = getString(R.string.translation_delay_hint)
-                inputType = android.text.InputType.TYPE_CLASS_NUMBER
-                setSelection(currentDelay.length)
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
             }
+            .show()
     }
 
     private fun showMaxRetriesDialog() {
         val currentRetries = Preferences.translationMaxRetries.toString()
         
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_number_input, null)
+        val editText = dialogView.findViewById<EditText>(R.id.number_input)
+        editText.setText(currentRetries)
+        editText.hint = getString(R.string.translation_max_retries_hint)
+        editText.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+        editText.setSelection(currentRetries.length)
+        
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_max_retries)
             .setMessage(R.string.translation_max_retries_description)
-            .setView(R.layout.dialog_number_input)
+            .setView(dialogView)
             .setPositiveButton(R.string.save) { dialog, _ ->
-                val dialogView = (dialog as androidx.appcompat.app.AlertDialog).findViewById<android.widget.EditText>(R.id.number_input)
-                val newRetries = dialogView?.text?.toString()?.toIntOrNull()
+                val newRetries = editText.text?.toString()?.toIntOrNull()
                 if (newRetries == null || newRetries < 0 || newRetries > 10) {
-                    showToast(getString(R.string.translation_max_retries_invalid))
+                    requireContext().showToast(getString(R.string.translation_max_retries_invalid))
                 } else {
                     Preferences.preferenceSp.edit()
                         .putInt(TRANSLATION_MAX_RETRIES, newRetries)
                         .apply()
                     translationMaxRetriesPref.summary = getString(R.string.translation_max_retries_summary, newRetries)
-                    showToast(getString(R.string.translation_max_retries_saved))
+                    requireContext().showToast(getString(R.string.translation_max_retries_saved))
                 }
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-            ?.findViewById<android.widget.EditText>(R.id.number_input)
-            ?.apply {
-                setText(currentRetries)
-                hint = getString(R.string.translation_max_retries_hint)
-                inputType = android.text.InputType.TYPE_CLASS_NUMBER
-                setSelection(currentRetries.length)
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
             }
+            .show()
     }
 
     private fun showRestartDialog() {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.restart_app)
             .setMessage(R.string.translation_restart_message)
-            .setPositiveButton(R.string.restart) { _, _ ->
+            .setPositiveButton(R.string.restart) { dialog, _ ->
                 // Restart the app
                 val intent = requireContext().packageManager
                     .getLaunchIntentForPackage(requireContext().packageName)
-                intent?.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                intent?.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+                intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                if (intent != null) {
+                    startActivity(intent)
+                }
                 android.os.Process.killProcess(android.os.Process.myPid())
+                dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel, null)
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 

@@ -12,7 +12,7 @@ import com.yenaly.han1meviewer.logic.model.VideoCommentArgs
 import com.yenaly.han1meviewer.logic.model.VideoComments
 import com.yenaly.han1meviewer.logic.state.WebsiteState
 import com.yenaly.han1meviewer.ui.fragment.video.CommentFragment
-import com.yenaly.han1meviewer.ui.viewmodel.AppViewModel.csrfToken
+import com.yenaly.han1meviewer.ui.viewmodel.AppViewModel
 import com.yenaly.han1meviewer.util.loadAssetAs
 import com.yenaly.yenaly_libs.base.YenalyViewModel
 import com.yenaly.yenaly_libs.utils.showShortToast
@@ -38,7 +38,7 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
     private val _reportMessage = MutableSharedFlow<Message>()
     val reportMessage = _reportMessage.asSharedFlow()
     data class Message(
-        @param:StringRes val resId: Int,
+        @StringRes val resId: Int,
         val args: List<Any> = emptyList()
     )
 
@@ -123,7 +123,7 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
         text: String,
     ) {
         viewModelScope.launch {
-            NetworkRepo.postComment(csrfToken, currentUserId, targetUserId, type, text)
+            NetworkRepo.postComment(AppViewModel.csrfToken, currentUserId, targetUserId, type, text)
                 .collect(_postCommentFlow::emit)
         }
     }
@@ -133,7 +133,7 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
         text: String,
     ) {
         viewModelScope.launch {
-            NetworkRepo.postCommentReply(csrfToken, replyCommentId, text)
+            NetworkRepo.postCommentReply(AppViewModel.csrfToken, replyCommentId, text)
                 .collect(_postReplyFlow::emit)
         }
     }
@@ -166,7 +166,7 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
     ) {
         viewModelScope.launch {
             NetworkRepo.likeComment(
-                csrfToken,
+                AppViewModel.csrfToken,
                 commentPlace,
                 comment.post.foreignId,
                 isPositive,
@@ -188,10 +188,6 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
                                     item
                                 }
                             }
-//                            prevList.toMutableList().apply {
-//                                this[commentPosition] =
-//                                    this[commentPosition].handleCommentLike(argState.info)
-//                            }
                         }
 
                         CommentPlace.CHILD_COMMENT -> _videoReplyFlow.update { prevList ->
@@ -201,10 +197,6 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
                                 } else {
                                     item
                                 }
-//                            prevList.toMutableList().apply {
-//                                this[commentPosition] =
-//                                    this[commentPosition].handleCommentLike(argState.info)
-//                            }
                             }
                         }
                     }
@@ -224,15 +216,15 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
     fun handleCommentLike(args: VideoCommentArgs) {
         if (args.isPositive) {
             if (args.comment.post.likeCommentStatus) {
-                showShortToast(R.string.cancel_thumb_up_success)
+                applicationContext.showShortToast(R.string.cancel_thumb_up_success)
             } else {
-                showShortToast(R.string.thumb_up_success)
+                applicationContext.showShortToast(R.string.thumb_up_success)
             }
         } else {
             if (args.comment.post.unlikeCommentStatus) {
-                showShortToast(R.string.cancel_thumb_down_success)
+                applicationContext.showShortToast(R.string.cancel_thumb_down_success)
             } else {
-                showShortToast(R.string.thumb_down_success)
+                applicationContext.showShortToast(R.string.thumb_down_success)
             }
         }
     }
@@ -245,9 +237,9 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
         reportableId: String?
     ){
         viewModelScope.launch {
-            Log.i("ReportComment", "csrfToken:${csrfToken}")
+            Log.i("ReportComment", "csrfToken:${AppViewModel.csrfToken}")
             NetworkRepo.reportComment(
-                csrfToken = csrfToken,
+                csrfToken = AppViewModel.csrfToken,
                 reason = reason,
                 currentUserId = currentUserId,
                 redirectUrl = redirectUrl,
@@ -264,7 +256,7 @@ class CommentViewModel(application: Application) : YenalyViewModel(application) 
                         )
                     }
                     WebsiteState.Loading -> {
-
+                        // Do nothing for loading state
                     }
                     is WebsiteState.Success<*> -> {
                         _reportMessage.emit(Message(R.string.report_success))

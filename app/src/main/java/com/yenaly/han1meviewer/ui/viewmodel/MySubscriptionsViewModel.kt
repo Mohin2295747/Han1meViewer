@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
@@ -29,7 +30,7 @@ class MySubscriptionsViewModel : ViewModel() {
     private val cachedArtists = mutableListOf<SubscriptionItem>()
 
     private val _refreshCompleted = MutableSharedFlow<Unit>()
-    val refreshCompleted: SharedFlow<Unit> = _refreshCompleted
+    val refreshCompleted: SharedFlow<Unit> = _refreshCompleted.asSharedFlow()
 
     private var hasLoaded = false
     fun reset() {
@@ -60,29 +61,35 @@ class MySubscriptionsViewModel : ViewModel() {
                     isLoadingMore = false
                 }
                 .collect { state ->
-                    if (state is WebsiteState.Success) {
-                        _refreshCompleted.emit(Unit)
-                        val info = state.info
-                        if (currentPage == 1) {
-                            cachedArtists.clear()
-                            cachedArtists.addAll(info.subscriptions)
-                        }
-                        if (info.subscriptionsVideos.isNotEmpty()) {
-                            cachedVideos.addAll(info.subscriptionsVideos)
-                            currentPage++
-                            Log.i("getMySubscriptions","currentPage:$currentPage")
-                        } else {
-                            hasMore = false
-                        }
-                        _subscriptionsState.value = WebsiteState.Success(
-                            MySubscriptions(
-                                subscriptions = cachedArtists.toList(),
-                                subscriptionsVideos = cachedVideos.toList(),
-                                maxPage = info.maxPage
+                    when (state) {
+                        is WebsiteState.Success -> {
+                            _refreshCompleted.emit(Unit)
+                            val info = state.info
+                            if (currentPage == 1) {
+                                cachedArtists.clear()
+                                cachedArtists.addAll(info.subscriptions)
+                            }
+                            if (info.subscriptionsVideos.isNotEmpty()) {
+                                cachedVideos.addAll(info.subscriptionsVideos)
+                                currentPage++
+                                Log.i("getMySubscriptions","currentPage:$currentPage")
+                            } else {
+                                hasMore = false
+                            }
+                            _subscriptionsState.value = WebsiteState.Success(
+                                MySubscriptions(
+                                    subscriptions = cachedArtists.toList(),
+                                    subscriptionsVideos = cachedVideos.toList(),
+                                    maxPage = info.maxPage
                                 )
-                        )
-                    } else if (state is WebsiteState.Error){
-                        _subscriptionsState.value = WebsiteState.Error(state.throwable)
+                            )
+                        }
+                        is WebsiteState.Error -> {
+                            _subscriptionsState.value = WebsiteState.Error(state.throwable)
+                        }
+                        WebsiteState.Loading -> {
+                            // Loading state is already handled by onStart
+                        }
                     }
                     isLoadingMore = false
                 }

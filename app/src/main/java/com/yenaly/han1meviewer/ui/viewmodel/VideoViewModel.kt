@@ -106,8 +106,8 @@ class VideoViewModel(application: Application) : YenalyViewModel(application) {
         }
         if (videoIntroRestoredSet.contains(videoCode)) return
         viewModelScope.launch {
-            val flow = if (fromDownload) {
-                HCacheManager.loadHanimeVideoInfo(application,videoCode).map { hv ->
+            val flow: Flow<VideoLoadingState<HanimeVideo>> = if (fromDownload) {
+                HCacheManager.loadHanimeVideoInfo(application, videoCode).map { hv ->
                     if (hv == null) {
                         VideoLoadingState.NoContent
                     } else {

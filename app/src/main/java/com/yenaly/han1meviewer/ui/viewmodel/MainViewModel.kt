@@ -18,7 +18,6 @@ import com.yenaly.han1meviewer.logic.entity.WatchHistoryEntity
 import com.yenaly.han1meviewer.logic.model.Announcement
 import com.yenaly.han1meviewer.logic.model.HomePage
 import com.yenaly.han1meviewer.logic.state.WebsiteState
-import com.yenaly.han1meviewer.ui.viewmodel.AppViewModel.csrfToken
 import com.yenaly.yenaly_libs.base.YenalyViewModel
 import com.yenaly.yenaly_libs.utils.getSpValue
 import kotlinx.coroutines.Dispatchers
@@ -44,20 +43,25 @@ class MainViewModel(application: Application) : YenalyViewModel(application) {
     val announcements: LiveData<List<Announcement>> = _announcements
     private val database = FirebaseDatabase.getInstance(FIREBASE_REALTIME_DATABASE)
 
+    var csrfToken: String? = null
+    var userId: String? = null
+
     init {
         viewModelScope.launch {
             // 初始化默认已下载分组，防止[FOREIGN KEY constraint failed]
             DatabaseRepo.HanimeDownload.insertDefaultGroup()
         }
     }
+
     fun getHomePage() {
         viewModelScope.launch {
-            NetworkRepo.getHomePage().collect { homePage ->
+            NetworkRepo.getHomePage().collect<HomePage> { homePage ->
                 if (homePage is WebsiteState.Success) {
                     csrfToken = homePage.info.csrfToken
-                    homePage.info.userId.takeIf { it.isNotEmpty() }?.let { userId ->
+                    homePage.info.userId.takeIf { it.isNotEmpty() }?.let { id ->
+                        userId = id
                         Preferences.preferenceSp.edit {
-                            putString(SAVED_USER_ID, userId)
+                            putString(SAVED_USER_ID, id)
                         }
                     }
                 }
@@ -84,7 +88,9 @@ class MainViewModel(application: Application) : YenalyViewModel(application) {
         DatabaseRepo.WatchHistory.loadAll()
             .catch { e -> e.printStackTrace() }
             .flowOn(Dispatchers.IO)
+
     private val _modifyHKeyframeFlow = MutableSharedFlow<Pair<Boolean, String>>()
+    
     fun removeHKeyframe(videoCode: String, hKeyframe: HKeyframeEntity.Keyframe) {
         viewModelScope.launch(Dispatchers.IO) {
             DatabaseRepo.HKeyframe.removeKeyframe(videoCode, hKeyframe)
@@ -92,6 +98,7 @@ class MainViewModel(application: Application) : YenalyViewModel(application) {
             _modifyHKeyframeFlow.emit(true to application.getString(R.string.delete_success))
         }
     }
+
     fun modifyHKeyframe(
         videoCode: String,
         oldKeyframe: HKeyframeEntity.Keyframe, keyframe: HKeyframeEntity.Keyframe,
@@ -102,6 +109,7 @@ class MainViewModel(application: Application) : YenalyViewModel(application) {
             _modifyHKeyframeFlow.emit(true to application.getString(R.string.modify_success))
         }
     }
+
     fun deleteHKeyframes(entity: HKeyframeEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             DatabaseRepo.HKeyframe.delete(entity)
@@ -113,9 +121,10 @@ class MainViewModel(application: Application) : YenalyViewModel(application) {
             DatabaseRepo.HKeyframe.update(entity)
         }
     }
+
     fun loadAnnouncements(forceRefresh: Boolean = false) {
-        val lastDismissTime = getSpValue("last_dismiss_time",0L,"setting_pref")
-        val shouldShowAnno = System.currentTimeMillis() - lastDismissTime > 24*60*60*1000L
+        val lastDismissTime = getSpValue("last_dismiss_time", 0L, "setting_pref")
+        val shouldShowAnno = System.currentTimeMillis() - lastDismissTime > 24 * 60 * 60 * 1000L
         if (!shouldShowAnno) return
         if (_announcements.value != null && !forceRefresh) return
 
@@ -134,7 +143,7 @@ class MainViewModel(application: Application) : YenalyViewModel(application) {
             } else {
                 _announcements.postValue(emptyList())
             }
-            Log.i("Announcement",list.toString())
+            Log.i("Announcement", list.toString())
         }.addOnFailureListener { e ->
             Log.e("Announcement", "读取失败: ${e.message}")
             _announcements.postValue(emptyList())

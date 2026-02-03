@@ -43,7 +43,7 @@ class MyPlayListViewModelV2 : ViewModel() {
 
 
     private val _refreshCompleted = MutableSharedFlow<Unit>()
-    val refreshCompleted: SharedFlow<Unit> = _refreshCompleted
+    val refreshCompleted: SharedFlow<Unit> = _refreshCompleted.asSharedFlow()
 
     private val _showSheet = MutableStateFlow(false)
     val showSheet: StateFlow<Boolean> = _showSheet.asStateFlow()
@@ -114,7 +114,7 @@ class MyPlayListViewModelV2 : ViewModel() {
                         }
                     }
 
-                    is PageLoadingState.NoMoreData -> {
+                    PageLoadingState.NoMoreData -> {
                         _playlistStateFlow.value = PageLoadingState.NoMoreData
                     }
                 }
