@@ -1,10 +1,11 @@
 package com.yenaly.han1meviewer.ui.fragment.settings
 
-import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,13 +85,8 @@ class PageStorageFragment : Fragment() {
 
             updateStats(pages)
 
-            if (pages.isEmpty()) {
-                binding.emptyState.visibility = View.VISIBLE
-                binding.recyclerView.visibility = View.GONE
-            } else {
-                binding.emptyState.visibility = View.GONE
-                binding.recyclerView.visibility = View.VISIBLE
-            }
+            binding.emptyState.visibility = if (pages.isEmpty()) View.VISIBLE else View.GONE
+            binding.recyclerView.visibility = if (pages.isEmpty()) View.GONE else View.VISIBLE
         }
     }
 
@@ -154,13 +150,13 @@ class PageStorageFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.clear_all_pages)
             .setMessage(R.string.clear_all_pages_confirmation)
-            .setPositiveButton(R.string.clear) { dialog, _ ->
+            .setPositiveButton(R.string.clear) { dialog: DialogInterface, _ ->
                 PageStorageManager.clearAll()
                 loadPages()
                 showToast(getString(R.string.all_pages_cleared))
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _ ->
                 dialog.dismiss()
             }
             .show()

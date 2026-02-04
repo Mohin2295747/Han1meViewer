@@ -1,15 +1,16 @@
 package com.yenaly.han1meviewer.ui.fragment.settings
 
-import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import com.yenaly.han1meviewer.R
 import com.yenaly.han1meviewer.Preferences
+import com.yenaly.han1meviewer.R
 import com.yenaly.han1meviewer.logic.PageStorageManager
 import com.yenaly.han1meviewer.logic.TranslationManager
 import kotlinx.coroutines.runBlocking
@@ -163,7 +164,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             .setTitle(R.string.translation_key)
             .setMessage(R.string.translation_key_description)
             .setView(dialogView)
-            .setPositiveButton(R.string.save) { dialog, _ ->
+            .setPositiveButton(R.string.save) { dialog: DialogInterface, _ ->
                 val newKey = editText.text.toString().trim()
                 if (newKey.isNotBlank()) {
                     Preferences.translationKey = newKey
@@ -174,7 +175,9 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 
@@ -186,7 +189,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_delay)
             .setView(dialogView)
-            .setPositiveButton(R.string.save) { dialog, _ ->
+            .setPositiveButton(R.string.save) { dialog: DialogInterface, _ ->
                 editText.text.toString().toLongOrNull()?.let {
                     Preferences.preferenceSp.edit()
                         .putString(TRANSLATION_DELAY_MS, it.toString())
@@ -196,7 +199,9 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 
@@ -208,7 +213,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_max_retries)
             .setView(dialogView)
-            .setPositiveButton(R.string.save) { dialog, _ ->
+            .setPositiveButton(R.string.save) { dialog: DialogInterface, _ ->
                 editText.text.toString().toIntOrNull()?.let {
                     Preferences.preferenceSp.edit()
                         .putInt(TRANSLATION_MAX_RETRIES, it)
@@ -218,7 +223,9 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 
@@ -226,13 +233,15 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.clear_all_pages)
             .setMessage(R.string.clear_all_pages_confirmation)
-            .setPositiveButton(R.string.clear) { dialog, _ ->
+            .setPositiveButton(R.string.clear) { dialog: DialogInterface, _ ->
                 runBlocking { PageStorageManager.clearAll() }
                 updateStoredPagesSummary()
                 showToast(getString(R.string.all_pages_cleared))
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 
@@ -240,15 +249,23 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.restart_app)
             .setMessage(R.string.translation_restart_message)
-            .setPositiveButton(R.string.restart_app) { dialog, _ ->
+            .setPositiveButton(R.string.restart_app) { dialog: DialogInterface, _ ->
                 val intent = requireContext().packageManager
                     .getLaunchIntentForPackage(requireContext().packageName)
-                intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                android.os.Process.killProcess(android.os.Process.myPid())
+
+                if (intent != null) {
+                    intent.addFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    )
+                    startActivity(intent)
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                }
+
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 
