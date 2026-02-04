@@ -112,14 +112,14 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         updatePreferenceStates(Preferences.isTranslationEnabled)
     }
 
-    private fun updatePreferenceStates(isEnabled: Boolean) {
-        translationKeyPref.isEnabled = isEnabled
-        translationWaitEnabledPref.isEnabled = isEnabled
-        translationDelayPref.isEnabled = isEnabled
-        translationMaxRetriesPref.isEnabled = isEnabled
-        clearCachePref.isEnabled = isEnabled
-        viewStoredPagesPref.isEnabled = isEnabled
-        clearAllPagesPref.isEnabled = isEnabled
+    private fun updatePreferenceStates(enabled: Boolean) {
+        translationKeyPref.isEnabled = enabled
+        translationWaitEnabledPref.isEnabled = enabled
+        translationDelayPref.isEnabled = enabled
+        translationMaxRetriesPref.isEnabled = enabled
+        clearCachePref.isEnabled = enabled
+        viewStoredPagesPref.isEnabled = enabled
+        clearAllPagesPref.isEnabled = enabled
     }
 
     private fun getTranslationKeySummary(): String {
@@ -260,7 +260,6 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                     startActivity(intent)
                     android.os.Process.killProcess(android.os.Process.myPid())
                 }
-
                 dialog.dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog: DialogInterface, _ ->

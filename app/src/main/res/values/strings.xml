@@ -625,4 +625,5 @@
 <string name="no_pages_stored">No pages stored yet</string>
 <string name="all_pages_cleared">All stored pages cleared</string>
 <string name="clear_all_pages_confirmation">Delete all stored pages? This cannot be undone.</string>
+<string name="clear">Clear</string>
 </resources>
