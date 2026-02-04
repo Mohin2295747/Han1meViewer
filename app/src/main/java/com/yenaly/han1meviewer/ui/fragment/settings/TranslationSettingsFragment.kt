@@ -1,10 +1,10 @@
 package com.yenaly.han1meviewer.ui.fragment.settings
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -14,9 +14,6 @@ import com.yenaly.han1meviewer.logic.PageStorageManager
 import com.yenaly.han1meviewer.logic.TranslationManager
 import kotlinx.coroutines.runBlocking
 
-/**
- * Translation settings fragment for configuring translation options
- */
 class TranslationSettingsFragment : PreferenceFragmentCompat() {
 
     companion object {
@@ -44,7 +41,6 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_translation, rootKey)
 
-        // Initialize preferences
         translationEnabledPref = findPreference(TRANSLATION_ENABLED)!!
         translationKeyPref = findPreference(TRANSLATION_KEY)!!
         translationWaitEnabledPref = findPreference(TRANSLATION_WAIT_ENABLED)!!
@@ -59,13 +55,9 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun setupPreferences() {
-        // Set initial values
         translationKeyPref.summary = getTranslationKeySummary()
-        
-        // Update stored pages summary
         updateStoredPagesSummary()
-        
-        // Set up preference change listeners
+
         translationEnabledPref.setOnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as Boolean
             Preferences.isTranslationEnabled = enabled
@@ -96,9 +88,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         }
 
         clearCachePref.setOnPreferenceClickListener {
-            runBlocking {
-                TranslationManager.clearCache()
-            }
+            runBlocking { TranslationManager.clearCache() }
             showToast(getString(R.string.translation_cache_cleared))
             true
         }
@@ -118,7 +108,6 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        // Initial state update
         updatePreferenceStates(Preferences.isTranslationEnabled)
     }
 
@@ -137,11 +126,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         return if (key.isNullOrBlank()) {
             getString(R.string.translation_key_default)
         } else {
-            if (key.length > 30) {
-                "${key.substring(0, 27)}..."
-            } else {
-                key
-            }
+            if (key.length > 30) "${key.substring(0, 27)}..." else key
         }
     }
 
@@ -149,7 +134,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         runBlocking {
             PageStorageManager.initialize()
             val stats = PageStorageManager.getStorageStats()
-            
+
             viewStoredPagesPref.summary = getString(
                 R.string.stored_pages_summary,
                 stats.totalPages,
@@ -157,10 +142,10 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 stats.failed,
                 stats.stale
             )
-            
-            // Update clear all pages summary
+
             if (stats.totalPages > 0) {
-                clearAllPagesPref.summary = getString(R.string.clear_all_pages_summary, stats.totalPages)
+                clearAllPagesPref.summary =
+                    getString(R.string.clear_all_pages_summary, stats.totalPages)
                 clearAllPagesPref.isEnabled = true
             } else {
                 clearAllPagesPref.summary = getString(R.string.no_pages_stored)
@@ -170,98 +155,70 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showTranslationKeyDialog() {
-        val currentKey = Preferences.translationKey ?: "zh-en.en.67772d43-6981727d-8453ce13-74722d776562"
-        
         val dialogView = layoutInflater.inflate(R.layout.dialog_translation_key_input, null)
         val editText = dialogView.findViewById<EditText>(R.id.translation_key_input)
-        editText.setText(currentKey)
-        
+        editText.setText(Preferences.translationKey ?: "")
+
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_key)
             .setMessage(R.string.translation_key_description)
             .setView(dialogView)
             .setPositiveButton(R.string.save) { dialog, _ ->
-                val newKey = editText.text?.toString()?.trim()
-                if (newKey.isNullOrBlank()) {
-                    showToast(getString(R.string.translation_key_empty_warning))
-                } else {
+                val newKey = editText.text.toString().trim()
+                if (newKey.isNotBlank()) {
                     Preferences.translationKey = newKey
                     translationKeyPref.summary = getTranslationKeySummary()
                     showToast(getString(R.string.translation_key_saved))
+                } else {
+                    showToast(getString(R.string.translation_key_empty_warning))
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setNeutralButton(R.string.reset_to_default) { dialog, _ ->
-                Preferences.translationKey = "zh-en.en.67772d43-6981727d-8453ce13-74722d776562"
-                translationKeyPref.summary = getTranslationKeySummary()
-                showToast(getString(R.string.translation_key_reset))
-                dialog.dismiss()
-            }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
     private fun showTranslationDelayDialog() {
-        val currentDelay = Preferences.translationDelayMs.toString()
-        
         val dialogView = layoutInflater.inflate(R.layout.dialog_number_input, null)
         val editText = dialogView.findViewById<EditText>(R.id.number_input)
-        editText.setText(currentDelay)
-        editText.hint = getString(R.string.translation_delay_hint)
-        
+        editText.setText(Preferences.translationDelayMs.toString())
+
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_delay)
-            .setMessage(R.string.translation_delay_description)
             .setView(dialogView)
             .setPositiveButton(R.string.save) { dialog, _ ->
-                val newDelay = editText.text?.toString()?.toLongOrNull()
-                if (newDelay == null || newDelay < 0 || newDelay > 10000) {
-                    showToast(getString(R.string.translation_delay_invalid))
-                } else {
+                editText.text.toString().toLongOrNull()?.let {
                     Preferences.preferenceSp.edit()
-                        .putString(TRANSLATION_DELAY_MS, newDelay.toString())
+                        .putString(TRANSLATION_DELAY_MS, it.toString())
                         .apply()
-                    translationDelayPref.summary = getString(R.string.translation_delay_summary, newDelay)
-                    showToast(getString(R.string.translation_delay_saved))
+                    translationDelayPref.summary =
+                        getString(R.string.translation_delay_summary, it)
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
     private fun showMaxRetriesDialog() {
-        val currentRetries = Preferences.translationMaxRetries.toString()
-        
         val dialogView = layoutInflater.inflate(R.layout.dialog_number_input, null)
         val editText = dialogView.findViewById<EditText>(R.id.number_input)
-        editText.setText(currentRetries)
-        editText.hint = getString(R.string.translation_max_retries_hint)
-        
+        editText.setText(Preferences.translationMaxRetries.toString())
+
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.translation_max_retries)
-            .setMessage(R.string.translation_max_retries_description)
             .setView(dialogView)
             .setPositiveButton(R.string.save) { dialog, _ ->
-                val newRetries = editText.text?.toString()?.toIntOrNull()
-                if (newRetries == null || newRetries < 0 || newRetries > 10) {
-                    showToast(getString(R.string.translation_max_retries_invalid))
-                } else {
+                editText.text.toString().toIntOrNull()?.let {
                     Preferences.preferenceSp.edit()
-                        .putInt(TRANSLATION_MAX_RETRIES, newRetries)
+                        .putInt(TRANSLATION_MAX_RETRIES, it)
                         .apply()
-                    translationMaxRetriesPref.summary = getString(R.string.translation_max_retries_summary, newRetries)
-                    showToast(getString(R.string.translation_max_retries_saved))
+                    translationMaxRetriesPref.summary =
+                        getString(R.string.translation_max_retries_summary, it)
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
@@ -269,17 +226,13 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.clear_all_pages)
             .setMessage(R.string.clear_all_pages_confirmation)
-            .setPositiveButton(R.string.clear) { dialog: AlertDialog, _ ->
-                runBlocking {
-                    PageStorageManager.clearAll()
-                }
+            .setPositiveButton(R.string.clear) { dialog, _ ->
+                runBlocking { PageStorageManager.clearAll() }
                 updateStoredPagesSummary()
                 showToast(getString(R.string.all_pages_cleared))
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
@@ -287,41 +240,32 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.restart_app)
             .setMessage(R.string.translation_restart_message)
-            .setPositiveButton(R.string.restart_app) { dialog: AlertDialog, _ ->
-                // Restart the app
+            .setPositiveButton(R.string.restart_app) { dialog, _ ->
                 val intent = requireContext().packageManager
                     .getLaunchIntentForPackage(requireContext().packageName)
-                intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                if (intent != null) {
-                    startActivity(intent)
-                }
+                intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
                 android.os.Process.killProcess(android.os.Process.myPid())
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
     private fun navigateToPageStorage() {
-        // Navigate to PageStorageFragment
-        val fragment = PageStorageFragment()
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fcv_settings, fragment)
+            .replace(R.id.fcv_settings, PageStorageFragment())
             .addToBackStack(null)
             .commit()
     }
 
     override fun onResume() {
         super.onResume()
-        // Update summaries when returning to fragment
         translationKeyPref.summary = getTranslationKeySummary()
-        translationDelayPref.summary = getString(R.string.translation_delay_summary, Preferences.translationDelayMs)
-        translationMaxRetriesPref.summary = getString(R.string.translation_max_retries_summary, Preferences.translationMaxRetries)
-        
-        // Update stored pages summary
+        translationDelayPref.summary =
+            getString(R.string.translation_delay_summary, Preferences.translationDelayMs)
+        translationMaxRetriesPref.summary =
+            getString(R.string.translation_max_retries_summary, Preferences.translationMaxRetries)
         updateStoredPagesSummary()
     }
 
