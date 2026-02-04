@@ -41,7 +41,7 @@ class PageStorageAdapter(
                 tvLastChecked.text = "Last checked: ${formatDateTime(pageVersion.lastChecked)}"
                 tvChecksum.text = "Checksum: ${pageVersion.checksum.take(8)}..."
                 
-                // Set status with icon and color
+                // Set status with icon and color - USING EXISTING ICONS
                 when (pageVersion.translationStatus) {
                     PageVersion.TranslationStatus.TRANSLATED -> {
                         ivStatus.setImageResource(R.drawable.ic_baseline_check_circle_24)
@@ -50,13 +50,13 @@ class PageStorageAdapter(
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.translated_bg))
                     }
                     PageVersion.TranslationStatus.FAILED -> {
-                        ivStatus.setImageResource(R.drawable.ic_baseline_error_outline_24)
+                        ivStatus.setImageResource(R.drawable.baseline_error_outline_24) // Changed to baseline_
                         tvStatus.text = "✗ Failed"
                         tvStatus.setTextColor(ContextCompat.getColor(root.context, R.color.red))
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.failed_bg))
                     }
                     PageVersion.TranslationStatus.STALE -> {
-                        ivStatus.setImageResource(R.drawable.ic_baseline_warning_24)
+                        ivStatus.setImageResource(R.drawable.baseline_warning_24) // Changed to baseline_
                         tvStatus.text = "↻ Needs Update"
                         tvStatus.setTextColor(ContextCompat.getColor(root.context, R.color.orange))
                         root.setBackgroundColor(ContextCompat.getColor(root.context, R.color.stale_bg))

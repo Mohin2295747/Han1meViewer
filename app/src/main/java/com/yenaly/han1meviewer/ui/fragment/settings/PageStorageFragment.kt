@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -145,16 +146,16 @@ class PageStorageFragment : Fragment() {
     }
     
     private fun showClearConfirmation() {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.clear_all_pages)
             .setMessage(R.string.clear_all_pages_confirmation)
-            .setPositiveButton(R.string.clear) { dialog, _ ->
+            .setPositiveButton(R.string.clear) { dialog: AlertDialog, _ ->
                 PageStorageManager.clearAll()
                 loadPages()
                 showToast(getString(R.string.all_pages_cleared))
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
                 dialog.dismiss()
             }
             .show()

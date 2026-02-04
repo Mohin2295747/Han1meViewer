@@ -269,7 +269,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.clear_all_pages)
             .setMessage(R.string.clear_all_pages_confirmation)
-            .setPositiveButton(R.string.clear) { dialog, _ ->
+            .setPositiveButton(R.string.clear) { dialog: AlertDialog, _ ->
                 runBlocking {
                     PageStorageManager.clearAll()
                 }
@@ -277,7 +277,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 showToast(getString(R.string.all_pages_cleared))
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
                 dialog.dismiss()
             }
             .show()
@@ -287,7 +287,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.restart_app)
             .setMessage(R.string.translation_restart_message)
-            .setPositiveButton(R.string.restart_app) { dialog, _ ->
+            .setPositiveButton(R.string.restart_app) { dialog: AlertDialog, _ ->
                 // Restart the app
                 val intent = requireContext().packageManager
                     .getLaunchIntentForPackage(requireContext().packageName)
@@ -299,7 +299,7 @@ class TranslationSettingsFragment : PreferenceFragmentCompat() {
                 android.os.Process.killProcess(android.os.Process.myPid())
                 dialog.dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
+            .setNegativeButton(R.string.cancel) { dialog: AlertDialog, _ ->
                 dialog.dismiss()
             }
             .show()
