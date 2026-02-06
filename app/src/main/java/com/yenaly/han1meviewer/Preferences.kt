@@ -28,40 +28,38 @@ object Preferences {
         get() = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
     var isAlreadyLogin: Boolean
-        get() = getSpValue(ALREADY_LOGIN, false)
+        get() = getSpValue("already_login", false)
         set(value) {
             loginStateFlow.value = value
-            putSpValue(ALREADY_LOGIN, value)
+            putSpValue("already_login", value)
         }
 
     val loginStateFlow = MutableStateFlow(isAlreadyLogin)
 
     val savedUserId: String
-        get() = preferenceSp.getString(SAVED_USER_ID,"") ?: ""
+        get() = preferenceSp.getString("saved_user_id","") ?: ""
 
     var loginCookie
-        get() = CookieString(getSpValue(LOGIN_COOKIE, EMPTY_STRING))
+        get() = CookieString(getSpValue("login_cookie", ""))
         set(value) {
             loginCookieStateFlow.value = value
-            putSpValue(LOGIN_COOKIE, value.cookie)
+            putSpValue("login_cookie", value.cookie)
         }
 
     val loginCookieStateFlow = MutableStateFlow(loginCookie)
 
     var cloudFlareCookie
-        get() = CookieString(getSpValue(CLOUDFLARE_COOKIE, EMPTY_STRING))
+        get() = CookieString(getSpValue("cloudflare_cookie", ""))
         set(value) {
             cloudFlareCookieStateFlow.value = value
-            putSpValue(CLOUDFLARE_COOKIE, value.cookie)
+            putSpValue("cloudflare_cookie", value.cookie)
         }
 
     val cloudFlareCookieStateFlow = MutableStateFlow(cloudFlareCookie)
 
-    private const val UPDATE_NODE_ID = "update_node_id"
-
     var updateNodeId: String
-        get() = getSpValue(UPDATE_NODE_ID, EMPTY_STRING)
-        set(value) = putSpValue(UPDATE_NODE_ID, value)
+        get() = getSpValue("update_node_id", "")
+        set(value) = putSpValue("update_node_id", value)
 
     var lastUpdatePopupTime
         get() = getSpValue(HomeSettingsFragment.LAST_UPDATE_POPUP_TIME, 0L)
@@ -152,7 +150,7 @@ object Preferences {
         get() = preferenceSp.getInt(NetworkSettingsFragment.PROXY_TYPE, HProxySelector.TYPE_SYSTEM)
 
     val proxyIp: String
-        get() = preferenceSp.getString(NetworkSettingsFragment.PROXY_IP, EMPTY_STRING).orEmpty()
+        get() = preferenceSp.getString(NetworkSettingsFragment.PROXY_IP, "").orEmpty()
 
     val proxyPort: Int
         get() = preferenceSp.getInt(NetworkSettingsFragment.PROXY_PORT, -1)
@@ -230,81 +228,58 @@ object Preferences {
         }
 
     var isTranslationEnabled: Boolean
-        get() = getSpValue(IS_TRANSLATION_ENABLED, false)
-        set(value) = putSpValue(IS_TRANSLATION_ENABLED, value)
+        get() = getSpValue("is_translation_enabled", false)
+        set(value) = putSpValue("is_translation_enabled", value)
 
     var translationApiKeys: Set<String>
-        get() = getSpValue(TRANSLATION_API_KEYS, setOf<String>())
-        set(value) = putSpValue(TRANSLATION_API_KEYS, value)
+        get() = getSpValue("translation_api_keys", setOf<String>())
+        set(value) = putSpValue("translation_api_keys", value)
 
     var translationMonthlyLimit: Int
-        get() = getSpValue(TRANSLATION_MONTHLY_LIMIT, 500000)
-        set(value) = putSpValue(TRANSLATION_MONTHLY_LIMIT, value)
+        get() = getSpValue("translation_monthly_limit", 500000)
+        set(value) = putSpValue("translation_monthly_limit", value)
 
     var translationTargetLang: String
-        get() = getSpValue(TRANSLATION_TARGET_LANG, "EN")
-        set(value) = putSpValue(TRANSLATION_TARGET_LANG, value)
+        get() = getSpValue("translation_target_lang", "EN")
+        set(value) = putSpValue("translation_target_lang", value)
 
     var translationBatchSize: Int
-        get() = getSpValue(TRANSLATION_BATCH_SIZE, 30000)
-        set(value) = putSpValue(TRANSLATION_BATCH_SIZE, value)
+        get() = getSpValue("translation_batch_size", 30000)
+        set(value) = putSpValue("translation_batch_size", value)
 
     var translateTitles: Boolean
-        get() = getSpValue(TRANSLATE_TITLES, true)
-        set(value) = putSpValue(TRANSLATE_TITLES, value)
+        get() = getSpValue("translate_titles", true)
+        set(value) = putSpValue("translate_titles", value)
 
     var translateDescriptions: Boolean
-        get() = getSpValue(TRANSLATE_DESCRIPTIONS, true)
-        set(value) = putSpValue(TRANSLATE_DESCRIPTIONS, value)
+        get() = getSpValue("translate_descriptions", true)
+        set(value) = putSpValue("translate_descriptions", value)
 
     var translateComments: Boolean
-        get() = getSpValue(TRANSLATE_COMMENTS, true)
-        set(value) = putSpValue(TRANSLATE_COMMENTS, value)
+        get() = getSpValue("translate_comments", true)
+        set(value) = putSpValue("translate_comments", value)
 
     var translateTags: Boolean
-        get() = getSpValue(TRANSLATE_TAGS, true)
-        set(value) = putSpValue(TRANSLATE_TAGS, value)
+        get() = getSpValue("translate_tags", true)
+        set(value) = putSpValue("translate_tags", value)
 
     var useMLKitTranslation: Boolean
-        get() = getSpValue(USE_MLKIT_TRANSLATION, false)
-        set(value) = putSpValue(USE_MLKIT_TRANSLATION, value)
+        get() = getSpValue("use_mlkit_translation", false)
+        set(value) = putSpValue("use_mlkit_translation", value)
 
     var mlkitAutoDownload: Boolean
-        get() = getSpValue(MLKIT_AUTO_DOWNLOAD, true)
-        set(value) = putSpValue(MLKIT_AUTO_DOWNLOAD, value)
+        get() = getSpValue("mlkit_auto_download", true)
+        set(value) = putSpValue("mlkit_auto_download", value)
 
     var showTranslatedTags: Boolean
-        get() = getSpValue(SHOW_TRANSLATED_TAGS, true)
-        set(value) = putSpValue(SHOW_TRANSLATED_TAGS, value)
+        get() = getSpValue("show_translated_tags", true)
+        set(value) = putSpValue("show_translated_tags", value)
 
     var showTranslatedTitles: Boolean
-        get() = getSpValue(SHOW_TRANSLATED_TITLES, true)
-        set(value) = putSpValue(SHOW_TRANSLATED_TITLES, value)
+        get() = getSpValue("show_translated_titles", true)
+        set(value) = putSpValue("show_translated_titles", value)
 
     var mlkitLastDownloadTime: Long
-        get() = getSpValue(MLKIT_LAST_DOWNLOAD_TIME, 0L)
-        set(value) = putSpValue(MLKIT_LAST_DOWNLOAD_TIME, value)
-
-    companion object {
-        private const val ALREADY_LOGIN = "already_login"
-        private const val SAVED_USER_ID = "saved_user_id"
-        private const val LOGIN_COOKIE = "login_cookie"
-        private const val CLOUDFLARE_COOKIE = "cloudflare_cookie"
-        private const val UPDATE_NODE_ID = "update_node_id"
-        private const val EMPTY_STRING = ""
-        private const val IS_TRANSLATION_ENABLED = "is_translation_enabled"
-        private const val TRANSLATION_API_KEYS = "translation_api_keys"
-        private const val TRANSLATION_MONTHLY_LIMIT = "translation_monthly_limit"
-        private const val TRANSLATION_TARGET_LANG = "translation_target_lang"
-        private const val TRANSLATION_BATCH_SIZE = "translation_batch_size"
-        private const val TRANSLATE_TITLES = "translate_titles"
-        private const val TRANSLATE_DESCRIPTIONS = "translate_descriptions"
-        private const val TRANSLATE_COMMENTS = "translate_comments"
-        private const val TRANSLATE_TAGS = "translate_tags"
-        private const val USE_MLKIT_TRANSLATION = "use_mlkit_translation"
-        private const val MLKIT_AUTO_DOWNLOAD = "mlkit_auto_download"
-        private const val SHOW_TRANSLATED_TAGS = "show_translated_tags"
-        private const val SHOW_TRANSLATED_TITLES = "show_translated_titles"
-        private const val MLKIT_LAST_DOWNLOAD_TIME = "mlkit_last_download_time"
-    }
+        get() = getSpValue("mlkit_last_download_time", 0L)
+        set(value) = putSpValue("mlkit_last_download_time", value)
 }

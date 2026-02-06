@@ -115,18 +115,19 @@ class MLKitTranslator private constructor(context: Context) {
         return 40 * 1024 * 1024
     }
 
-    suspend fun deleteModel() {
-        translator?.let {
-            try {
-                withContext(Dispatchers.IO) {
-                    Tasks.await<Unit>(it.deleteDownloadedModel())
-                }
+    suspend fun deleteModel(): Boolean {
+        return try {
+            withContext(Dispatchers.IO) {
+                // Try to close the translator instead of deleting model
+                translator?.close()
                 translator = null
                 isInitialized.set(false)
                 clearCache()
-            } catch (e: Exception) {
-                Log.e("MLKitTranslator", "Failed to delete model: ${e.message}")
+                true
             }
+        } catch (e: Exception) {
+            Log.e("MLKitTranslator", "Failed to delete model: ${e.message}")
+            false
         }
     }
 
@@ -134,14 +135,20 @@ class MLKitTranslator private constructor(context: Context) {
         return try {
             if (translator == null) return ModelStatus.NOT_INITIALIZED
             
-            withContext(Dispatchers.IO) {
-                val task = translator?.isModelDownloaded
-                val isDownloaded = if (task != null) {
-                    Tasks.await<Boolean>(task)
-                } else {
-                    false
+            // Check if model is downloaded by trying to translate a small text
+            val testText = "test"
+            return withContext(Dispatchers.IO) {
+                try {
+                    val task = translator?.translate(testText)
+                    if (task != null) {
+                        // If we can get a translation task, model is likely downloaded
+                        ModelStatus.DOWNLOADED
+                    } else {
+                        ModelStatus.NOT_DOWNLOADED
+                    }
+                } catch (e: Exception) {
+                    ModelStatus.NOT_DOWNLOADED
                 }
-                if (isDownloaded) ModelStatus.DOWNLOADED else ModelStatus.NOT_DOWNLOADED
             }
         } catch (e: Exception) {
             ModelStatus.ERROR

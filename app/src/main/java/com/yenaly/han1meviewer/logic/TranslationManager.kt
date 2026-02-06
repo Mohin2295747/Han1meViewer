@@ -452,9 +452,7 @@ class TranslationManager private constructor(context: Context) {
     // ML Kit specific methods
     fun getMLKitStatus(): MLKitTranslator.ModelStatus {
         return try {
-            runBlocking {
-                mlKitTranslator.checkModelStatus()
-            }
+            mlKitTranslator.checkModelStatus()
         } catch (e: Exception) {
             MLKitTranslator.ModelStatus.ERROR
         }
@@ -463,7 +461,9 @@ class TranslationManager private constructor(context: Context) {
     suspend fun downloadMLKitModel(): Boolean {
         return try {
             mlKitTranslator.initialize()
-            delay(5000)
+            // Wait for initialization
+            delay(3000)
+            // Check if ready after delay
             mlKitTranslator.isReady()
         } catch (e: Exception) {
             false
@@ -473,12 +473,7 @@ class TranslationManager private constructor(context: Context) {
     fun getMLKitModelSize(): Long = mlKitTranslator.getModelSize()
 
     suspend fun deleteMLKitModel(): Boolean {
-        return try {
-            mlKitTranslator.deleteModel()
-            true
-        } catch (e: Exception) {
-            false
-        }
+        return mlKitTranslator.deleteModel()
     }
 
     suspend fun getAllCacheItems(): List<TranslationCache> {
