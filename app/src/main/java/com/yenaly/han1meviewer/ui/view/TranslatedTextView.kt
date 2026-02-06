@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.yenaly.han1meviewer.logic.TranslationCache
+import com.yenaly.han1meviewer.logic.entity.TranslationCache
 import com.yenaly.han1meviewer.logic.TranslationManager
 import kotlinx.coroutines.launch
 

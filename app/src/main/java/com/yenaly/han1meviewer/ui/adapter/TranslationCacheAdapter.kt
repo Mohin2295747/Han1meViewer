@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.yenaly.han1meviewer.R
 import com.yenaly.han1meviewer.databinding.ItemTranslationCacheBinding
-import com.yenaly.han1meviewer.logic.TranslationCache
+import com.yenaly.han1meviewer.logic.entity.TranslationCache
 
 class TranslationCacheAdapter(
     private val onEditClick: (TranslationCache) -> Unit,

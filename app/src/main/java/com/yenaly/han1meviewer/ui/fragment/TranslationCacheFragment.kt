@@ -9,7 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yenaly.han1meviewer.R
 import com.yenaly.han1meviewer.databinding.FragmentTranslationCacheBinding
-import com.yenaly.han1meviewer.logic.TranslationCache
+import com.yenaly.han1meviewer.logic.entity.TranslationCache
 import com.yenaly.han1meviewer.logic.TranslationManager
 import com.yenaly.han1meviewer.ui.adapter.TranslationCacheAdapter
 import kotlinx.coroutines.flow.collectLatest

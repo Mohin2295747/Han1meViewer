@@ -17,6 +17,7 @@ import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.yenaly.han1meviewer.logic.network.HProxySelector
+import com.yenaly.han1meviewer.logic.MLKitTranslator
 import com.yenaly.han1meviewer.logic.Parser
 import com.yenaly.han1meviewer.logic.TranslationManager
 import com.yenaly.han1meviewer.logic.TranslationMigrationHelper

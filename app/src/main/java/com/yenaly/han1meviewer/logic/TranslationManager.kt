@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.yenaly.han1meviewer.Preferences
 import com.yenaly.han1meviewer.logic.dao.TranslationCacheDao
+import com.yenaly.han1meviewer.logic.entity.TranslationDatabase
 import com.yenaly.han1meviewer.logic.entity.TranslationCache
 import com.yenaly.han1meviewer.logic.exception.TranslationException
 import kotlinx.coroutines.*
