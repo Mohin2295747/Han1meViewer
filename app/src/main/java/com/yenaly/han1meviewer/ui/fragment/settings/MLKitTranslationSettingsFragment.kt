@@ -1,6 +1,7 @@
 package com.yenaly.han1meviewer.ui.fragment.settings
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.preference.*
 import com.yenaly.han1meviewer.Preferences
 import com.yenaly.han1meviewer.R
@@ -9,11 +10,10 @@ import com.yenaly.han1meviewer.logic.TranslationManager
 import com.yenaly.han1meviewer.ui.activity.SettingsRouter
 import com.yenaly.han1meviewer.ui.fragment.ToolbarHost
 import com.yenaly.yenaly_libs.base.settings.YenalySettingsFragment
-import com.yenaly.yenaly_libs.utils.ToastUtil
 import kotlinx.coroutines.*
 
 class MLKitTranslationSettingsFragment : YenalySettingsFragment(R.xml.settings_mlkit_translation) {
-
+    
     private val translationManager by lazy {
         TranslationManager.getInstance(requireContext())
     }
@@ -118,9 +118,9 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment(R.xml.settings_m
             }
 
             if (success) {
-                ToastUtil.showShort("Model downloaded successfully")
+                Toast.makeText(requireContext(), "Model downloaded successfully", Toast.LENGTH_SHORT).show()
             } else {
-                ToastUtil.showShort("Failed to download model")
+                Toast.makeText(requireContext(), "Failed to download model", Toast.LENGTH_SHORT).show()
             }
 
             updateStatus()
@@ -135,9 +135,9 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment(R.xml.settings_m
             }
 
             if (success) {
-                ToastUtil.showShort("Model deleted")
+                Toast.makeText(requireContext(), "Model deleted", Toast.LENGTH_SHORT).show()
             } else {
-                ToastUtil.showShort("Failed to delete model")
+                Toast.makeText(requireContext(), "Failed to delete model", Toast.LENGTH_SHORT).show()
             }
 
             updateStatus()

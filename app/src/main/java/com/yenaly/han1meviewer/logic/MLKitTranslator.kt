@@ -2,6 +2,7 @@ package com.yenaly.han1meviewer.logic
 
 import android.content.Context
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -73,9 +74,12 @@ class MLKitTranslator private constructor(context: Context) {
         return try {
             val task = translator?.translate(text)
             val result = withContext(Dispatchers.IO) {
-                task?.let { Tasks.await(it) }
-            } ?: text
-
+                if (task != null) {
+                    Tasks.await(task)
+                } else {
+                    text
+                }
+            }
             translationCache[text] = result
             result
         } catch (e: Exception) {
@@ -115,7 +119,7 @@ class MLKitTranslator private constructor(context: Context) {
         translator?.let {
             try {
                 withContext(Dispatchers.IO) {
-                    Tasks.await(it.deleteDownloadedModel())
+                    Tasks.await<Unit>(it.deleteDownloadedModel())
                 }
                 translator = null
                 isInitialized.set(false)
@@ -131,7 +135,12 @@ class MLKitTranslator private constructor(context: Context) {
             if (translator == null) return ModelStatus.NOT_INITIALIZED
             
             withContext(Dispatchers.IO) {
-                val isDownloaded = Tasks.await(translator?.isModelDownloaded) ?: false
+                val task = translator?.isModelDownloaded
+                val isDownloaded = if (task != null) {
+                    Tasks.await<Boolean>(task)
+                } else {
+                    false
+                }
                 if (isDownloaded) ModelStatus.DOWNLOADED else ModelStatus.NOT_DOWNLOADED
             }
         } catch (e: Exception) {
