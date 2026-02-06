@@ -1,4 +1,4 @@
-package com.yenaly.han1meviewer.logic
+>package com.yenaly.han1meviewer.logic
 
 import android.content.Context
 import android.util.Log
@@ -20,7 +20,7 @@ data class TranslationCache(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val originalText: String,
     val translatedText: String,
-    val sourceLang: String = "auto",
+    val sourceLang: String = "ZH",
     val targetLang: String = "EN",
     val contentType: ContentType,
     val videoCode: String? = null,
@@ -189,7 +189,6 @@ class TranslationManager private constructor(context: Context) {
         val apiKey = getNextApiKey(texts.sumOf { it.length }) ?: throw TranslationException("No available API key")
 
         val formBody = FormBody.Builder()
-            .add("auth_key", apiKey.key)
             .add("target_lang", targetLang)
 
         sourceLang?.let { formBody.add("source_lang", it) }
@@ -200,12 +199,13 @@ class TranslationManager private constructor(context: Context) {
         val request = Request.Builder()
             .url("https://api-free.deepl.com/v2/translate")
             .post(formBody.build())
+            .addHeader("Authorization", "DeepL-Auth-Key ${apiKey.key}")
             .build()
 
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    throw TranslationException("API call failed: ${response.code}")
+                    throw TranslationException("API call failed: ${response.code} - ${response.message}")
                 }
 
                 val body = response.body?.string() ?: throw TranslationException("Empty response")
@@ -291,7 +291,7 @@ class TranslationManager private constructor(context: Context) {
         }
 
         return try {
-            val translated = callDeepLApi(listOf(originalText), targetLang).firstOrNull() ?: originalText
+            val translated = callDeepLApi(listOf(originalText), targetLang, "ZH").firstOrNull() ?: originalText
 
             cacheDao.insert(
                 TranslationCache(
@@ -307,7 +307,7 @@ class TranslationManager private constructor(context: Context) {
 
             translated
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("TranslationManager", "Translation failed: ${e.message}")
             originalText
         }
     }
@@ -342,7 +342,7 @@ class TranslationManager private constructor(context: Context) {
 
         for (batch in batches) {
             try {
-                val translatedBatch = callDeepLApi(batch, targetLang)
+                val translatedBatch = callDeepLApi(batch, targetLang, "ZH")
 
                 for ((batchIndex, translated) in translatedBatch.withIndex()) {
                     val originalIndex = toTranslate[batchIndex].first
@@ -361,7 +361,7 @@ class TranslationManager private constructor(context: Context) {
                     )
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("TranslationManager", "Batch translation failed: ${e.message}")
                 for ((index, text) in batch.withIndex()) {
                     results[toTranslate[index].first] = text
                 }
@@ -382,7 +382,7 @@ class TranslationManager private constructor(context: Context) {
         }
 
         return try {
-            val translated = callDeepLApi(listOf(joinedTags), targetLang).firstOrNull() ?: joinedTags
+            val translated = callDeepLApi(listOf(joinedTags), targetLang, "ZH").firstOrNull() ?: joinedTags
 
             cacheDao.insert(
                 TranslationCache(
@@ -398,7 +398,7 @@ class TranslationManager private constructor(context: Context) {
 
             translated.split(TAG_SEPARATOR)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("TranslationManager", "Tag translation failed: ${e.message}")
             tags
         }
     }
