@@ -561,4 +561,14 @@
     <string name="translation_cache">Translation Cache</string>
     <string name="translation_settings">Translation</string>
     <string name="translation_settings_summary">Configure translation API, target language, and more</string>
+    <string name="mlkit_translation_settings">ML Kit Translation</string>
+<string name="mlkit_model_status">Model Status</string>
+<string name="mlkit_model_size">Model Size</string>
+<string name="download_mlkit_model">Download Model</string>
+<string name="delete_mlkit_model">Delete Model</string>
+<string name="enable_mlkit_translation">Enable ML Kit Translation</string>
+<string name="mlkit_auto_download">Auto-download model</string>
+<string name="show_translated_tags">Show translated tags</string>
+<string name="mlkit_translation_title">ML Kit Translation</string>
+<string name="show_translated_titles">Show translated titles</string>
 </resources>

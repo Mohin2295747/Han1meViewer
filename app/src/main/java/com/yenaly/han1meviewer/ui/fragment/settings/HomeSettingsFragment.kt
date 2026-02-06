@@ -456,6 +456,14 @@ class HomeSettingsFragment : YenalySettingsFragment(R.xml.settings_home) {
                 true
             }
         }
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    setPreferencesFromResource(R.xml.settings_home, rootKey)
+    
+    findPreference<Preference>("mlkit_settings_from_home")?.setOnPreferenceClickListener {
+        findNavController().navigate(R.id.mlkitTranslationSettingsFragment)
+        true
+    }
+}
 
         fakeLauncherIcon.apply {
         //    summary = getString(R.string.select_fake_icon)

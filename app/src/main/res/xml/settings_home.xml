@@ -97,6 +97,12 @@
             android:title="@string/translation_settings"
             android:summary="@string/translation_settings_summary"
             android:icon="@drawable/ic_baseline_translate_24" />
+            
+        <Preference
+            android:key="mlkit_settings_from_home"
+            android:title="ML Kit Translation"
+            android:summary="Offline translation settings"
+            android:icon="@drawable/baseline_translate_24" />
 
     </PreferenceCategory>
 

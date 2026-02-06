@@ -339,4 +339,11 @@ object Preferences {
     var translateTags: Boolean
         get() = getSpValue(TRANSLATE_TAGS, true)
         set(value) = putSpValue(TRANSLATE_TAGS, value)
+
+    // New: ML Kit settings
+    var useMLKitTranslation by booleanPreference(default = false)
+    var mlkitAutoDownload by booleanPreference(default = true)
+    var showTranslatedTags by booleanPreference(default = true)
+    var showTranslatedTitles by booleanPreference(default = true)
+    var mlkitLastDownloadTime by longPreference(default = 0L)
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="ML Kit Translation Settings">
+
+        <SwitchPreferenceCompat
+            android:key="use_mlkit_translation"
+            android:title="Enable ML Kit Translation"
+            android:summary="Use local model for translation (works offline)"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="mlkit_auto_download"
+            android:title="Auto-download model"
+            android:summary="Automatically download translation model on app start"
+            android:defaultValue="true"
+            app:dependency="use_mlkit_translation" />
+
+        <SwitchPreferenceCompat
+            android:key="show_translated_tags"
+            android:title="Show translated tags"
+            android:summary="Display tags in English on video pages"
+            android:defaultValue="true"
+            app:dependency="use_mlkit_translation" />
+
+        <SwitchPreferenceCompat
+            android:key="show_translated_titles"
+            android:title="Show translated titles"
+            android:summary="Display video titles in English"
+            android:defaultValue="true"
+            app:dependency="use_mlkit_translation" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Model Management">
+
+        <Preference
+            android:key="mlkit_model_status"
+            android:title="Model Status"
+            android:summary="Not initialized" />
+
+        <Preference
+            android:key="mlkit_model_size"
+            android:title="Model Size"
+            android:summary="Approx. 40 MB" />
+
+        <Preference
+            android:key="download_mlkit_model"
+            android:title="Download Model"
+            android:summary="Download translation model (requires WiFi)"
+            android:visible="true" />
+
+        <Preference
+            android:key="delete_mlkit_model"
+            android:title="Delete Model"
+            android:summary="Delete downloaded translation model"
+            android:visible="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

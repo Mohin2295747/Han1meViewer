@@ -202,6 +202,8 @@ dependencies {
     implementation(libs.statelayout)
     implementation(libs.circular.reveal.switch)
     implementation(libs.drawerlayout)
+    implementation("com.google.mlkit:language-id:17.0.4")
+    implementation("com.google.mlkit:translate:17.0.2")
 
     // firebase
 

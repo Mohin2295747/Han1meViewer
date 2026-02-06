@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.*
 import com.yenaly.han1meviewer.Preferences
+import com.yenaly.han1meviewer.logic.MLKitTranslator
 import com.yenaly.han1meviewer.logic.exception.TranslationException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -140,6 +141,10 @@ class TranslationManager private constructor(context: Context) {
                 }
             }
         }
+    private val mlKitTranslator by lazy {
+        MLKitTranslator.getInstance(context)
+    }
+    private val context = context.applicationContext
     }
 
     fun initialize() {
@@ -150,13 +155,30 @@ class TranslationManager private constructor(context: Context) {
                 apiKeys.add(TranslationApiKey(key, Preferences.translationMonthlyLimit))
             }
         }
-        isEnabled = Preferences.isTranslationEnabled && apiKeys.isNotEmpty()
-        targetLang = Preferences.translationTargetLang
-        batchSize = Preferences.translationBatchSize
-        translateTitles = Preferences.translateTitles
-        translateDescriptions = Preferences.translateDescriptions
-        translateComments = Preferences.translateComments
-        translateTags = Preferences.translateTags
+        if (Preferences.useMLKitTranslation) {
+            // When ML Kit is enabled, ignore DeepL settings and force translate everything
+            isEnabled = true
+            translateTitles = Preferences.showTranslatedTitles
+            translateDescriptions = true
+            translateComments = true
+            translateTags = Preferences.showTranslatedTags
+        
+            // Auto-download ML Kit model if needed
+            if (Preferences.mlkitAutoDownload) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    mlKitTranslator.initialize()
+                }
+            }
+        } else {
+            isEnabled = Preferences.isTranslationEnabled && apiKeys.isNotEmpty()
+            targetLang = Preferences.translationTargetLang
+            batchSize = Preferences.translationBatchSize
+            translateTitles = Preferences.translateTitles
+            translateDescriptions = Preferences.translateDescriptions
+            translateComments = Preferences.translateComments
+            translateTags = Preferences.translateTags
+        }
+    
         apiKeys.forEach { it.resetIfNeeded() }
     }
 
@@ -179,6 +201,43 @@ class TranslationManager private constructor(context: Context) {
         }
 
         return null
+    }
+    
+    private suspend fun translateWithMLKit(
+        originalText: String,
+        contentType: TranslationCache.ContentType,
+        videoCode: String? = null,
+        forceFresh: Boolean = false
+    ): String {
+        if (originalText.isBlank()) return originalText
+
+        if (!forceFresh) {
+            val cached = cacheDao.get(originalText, targetLang, contentType)
+            if (cached != null && cached.translationEngine == TranslationCache.TranslationEngine.MLKIT) {
+                return cached.translatedText
+            }
+        }
+
+        return try {
+            val translated = mlKitTranslator.translate(originalText)
+        
+            cacheDao.insert(
+                TranslationCache(
+                    originalText = originalText,
+                    translatedText = translated,
+                    targetLang = targetLang,
+                    contentType = contentType,
+                    videoCode = videoCode,
+                    translationEngine = TranslationCache.TranslationEngine.MLKIT, // IMPORTANT
+                    charsConsumed = originalText.length
+                )
+            )
+        
+            translated
+        } catch (e: Exception) {
+            Log.e("TranslationManager", "ML Kit translation failed: ${e.message}")
+            originalText
+        }
     }
 
     private suspend fun callDeepLApi(
@@ -272,6 +331,9 @@ class TranslationManager private constructor(context: Context) {
         videoCode: String? = null,
         forceFresh: Boolean = false
     ): String {
+        if (Preferences.useMLKitTranslation) {
+            return translateWithMLKit(originalText, contentType, videoCode, forceFresh)
+        }
         if (!isEnabled || originalText.isBlank()) return originalText
 
         if (!forceFresh) {
@@ -429,6 +491,38 @@ class TranslationManager private constructor(context: Context) {
             }
         )
     }
+    
+    // ML Kit specific methods
+fun getMLKitStatus(): MLKitTranslator.ModelStatus {
+    return try {
+        runBlocking {
+            mlKitTranslator.checkModelStatus()
+        }
+    } catch (e: Exception) {
+        MLKitTranslator.ModelStatus.ERROR
+    }
+}
+
+suspend fun downloadMLKitModel(): Boolean {
+    return try {
+        mlKitTranslator.initialize()
+        delay(5000)
+        mlKitTranslator.isReady()
+    } catch (e: Exception) {
+        false
+    }
+}
+
+fun getMLKitModelSize(): Long = mlKitTranslator.getModelSize()
+
+suspend fun deleteMLKitModel(): Boolean {
+    return try {
+        mlKitTranslator.deleteModel()
+        true
+    } catch (e: Exception) {
+        false
+    }
+}
 
     suspend fun getAllCacheItems(): List<TranslationCache> {
         return cacheDao.getAll().first()

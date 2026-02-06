@@ -87,6 +87,17 @@ class HanimeApplication : YenalyApplication() {
         if (AnimeShaders.copyShaderAssets(applicationContext) <= 0) {
             Log.w(TAG, "Shader copy failed")
         }
+        
+        if (Preferences.useMLKitTranslation && Preferences.mlkitAutoDownload) {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val mlKitTranslator = MLKitTranslator.getInstance(this@HanimeApplication)
+                    mlKitTranslator.initialize()
+                } catch (e: Exception) {
+                    Log.e("App", "Failed to initialize ML Kit: ${e.message}")
+                }
+            }
+        }
 
         switchLauncher(Preferences.fakeLauncherIcon)
     }

@@ -1,0 +1,852 @@
+.
+├── HanimeAnnouncementManagerWebUI
+│   ├── HanimeAnnouncementManager.html
+│   └── PermitAdmin.py
+├── LICENSE
+├── README.md
+├── README_TECH.md
+├── app
+│   ├── build.gradle.kts
+│   ├── keystore
+│   │   └── Han1meViewerKeystore.jks
+│   ├── proguard-rules.pro
+│   └── src
+│       ├── androidTest
+│       │   └── java
+│       │       └── com
+│       │           └── yenaly
+│       │               └── han1meviewer
+│       │                   └── ExampleInstrumentedTest.kt
+│       ├── debug
+│       │   └── res
+│       │       └── values
+│       │           └── strings.xml
+│       ├── main
+│       │   ├── AndroidManifest.xml
+│       │   ├── assets
+│       │   │   ├── h_keyframes
+│       │   │   │   ├── 12444.json
+│       │   │   │   ├── 14463.json
+│       │   │   │   ├── 21806.json
+│       │   │   │   ├── 22068.json
+│       │   │   │   ├── 37176.json
+│       │   │   │   ├── 37177.json
+│       │   │   │   ├── 37178.json
+│       │   │   │   ├── 37179.json
+│       │   │   │   ├── 37220.json
+│       │   │   │   ├── 37221.json
+│       │   │   │   ├── 38387.json
+│       │   │   │   ├── 38389.json
+│       │   │   │   ├── 38457.json
+│       │   │   │   ├── 38461.json
+│       │   │   │   ├── 39192.json
+│       │   │   │   ├── 39305.json
+│       │   │   │   ├── 39306.json
+│       │   │   │   ├── 39468.json
+│       │   │   │   ├── 39811.json
+│       │   │   │   ├── 84717.json
+│       │   │   │   ├── 84718.json
+│       │   │   │   ├── 85926.json
+│       │   │   │   ├── 85927.json
+│       │   │   │   ├── 87968.json
+│       │   │   │   ├── 87969.json
+│       │   │   │   ├── 89087.json
+│       │   │   │   ├── 89088.json
+│       │   │   │   └── README.md
+│       │   │   ├── report_reason.json
+│       │   │   ├── search_options
+│       │   │   │   ├── brands.json
+│       │   │   │   ├── duration.json
+│       │   │   │   ├── genre.json
+│       │   │   │   ├── genre_av.json
+│       │   │   │   ├── release_date.json
+│       │   │   │   ├── sort_option.json
+│       │   │   │   └── tags.json
+│       │   │   └── shaders
+│       │   │       ├── Anime4K_AutoDownscalePre_x2.glsl
+│       │   │       ├── Anime4K_AutoDownscalePre_x4.glsl
+│       │   │       ├── Anime4K_Clamp_Highlights.glsl
+│       │   │       ├── Anime4K_Restore_CNN_M.glsl
+│       │   │       ├── Anime4K_Restore_CNN_S.glsl
+│       │   │       ├── Anime4K_Restore_CNN_VL.glsl
+│       │   │       ├── Anime4K_Upscale_CNN_x2_M.glsl
+│       │   │       ├── Anime4K_Upscale_CNN_x2_S.glsl
+│       │   │       └── Anime4K_Upscale_CNN_x2_VL.glsl
+│       │   ├── java
+│       │   │   └── com
+│       │   │       └── yenaly
+│       │   │           └── han1meviewer
+│       │   │               ├── Constants.kt
+│       │   │               ├── FirebaseConstants.kt
+│       │   │               ├── HAdvancedSearch.kt
+│       │   │               ├── HCacheManager.kt
+│       │   │               ├── HCrashHandler.kt
+│       │   │               ├── HFileManager.kt
+│       │   │               ├── HInitializer.kt
+│       │   │               ├── HanimeApplication.kt
+│       │   │               ├── HanimeManager.kt
+│       │   │               ├── HanimeResolution.kt
+│       │   │               ├── Preferences.kt
+│       │   │               ├── VideoCoverSize.kt
+│       │   │               ├── logic
+│       │   │               │   ├── DatabaseRepo.kt
+│       │   │               │   ├── MLKitTranslator.kt
+│       │   │               │   ├── NetworkRepo.kt
+│       │   │               │   ├── Parser.kt
+│       │   │               │   ├── TranslationManager.kt
+│       │   │               │   ├── TranslationMigrationHelper.kt
+│       │   │               │   ├── dao
+│       │   │               │   │   ├── CheckInRecordDao.kt
+│       │   │               │   │   ├── CheckInRecordDatabase.kt
+│       │   │               │   │   ├── DownloadDatabase.kt
+│       │   │               │   │   ├── DownloadGroupDao.kt
+│       │   │               │   │   ├── HKeyframeDao.kt
+│       │   │               │   │   ├── HistoryDatabase.kt
+│       │   │               │   │   ├── MiscellanyDatabase.kt
+│       │   │               │   │   ├── SearchHistoryDao.kt
+│       │   │               │   │   ├── WatchHistoryDao.kt
+│       │   │               │   │   └── download
+│       │   │               │   │       ├── DownloadCategoryDao.kt
+│       │   │               │   │       └── HanimeDownloadDao.kt
+│       │   │               │   ├── entity
+│       │   │               │   │   ├── CheckInRecordEntity.kt
+│       │   │               │   │   ├── HKeyframeEntity.kt
+│       │   │               │   │   ├── SearchHistoryEntity.kt
+│       │   │               │   │   ├── WatchHistoryEntity.kt
+│       │   │               │   │   └── download
+│       │   │               │   │       ├── DownloadCategoryEntity.kt
+│       │   │               │   │       ├── DownloadGroupEntity.kt
+│       │   │               │   │       ├── HanimeCategoryCrossRef.kt
+│       │   │               │   │       ├── HanimeDownloadEntity.kt
+│       │   │               │   │       └── VideoWithCategories.kt
+│       │   │               │   ├── exception
+│       │   │               │   │   ├── CloudFlareBlockedException.kt
+│       │   │               │   │   ├── HanimeNotFoundException.kt
+│       │   │               │   │   ├── IPBlockedException.kt
+│       │   │               │   │   ├── ParseException.kt
+│       │   │               │   │   └── TranslationException.kt
+│       │   │               │   ├── model
+│       │   │               │   │   ├── Announcement.kt
+│       │   │               │   │   ├── DownloadGroupModel.kt
+│       │   │               │   │   ├── HanimeInfo.kt
+│       │   │               │   │   ├── HanimePreview.kt
+│       │   │               │   │   ├── HanimeVideo.kt
+│       │   │               │   │   ├── HomePage.kt
+│       │   │               │   │   ├── MultiItemEntity.kt
+│       │   │               │   │   ├── MyListItems.kt
+│       │   │               │   │   ├── MySubscriptions.kt
+│       │   │               │   │   ├── ParamEnum.kt
+│       │   │               │   │   ├── Playlists.kt
+│       │   │               │   │   ├── ReportReason.kt
+│       │   │               │   │   ├── SearchOption.kt
+│       │   │               │   │   ├── SearchTag.kt
+│       │   │               │   │   ├── VideoComments.kt
+│       │   │               │   │   ├── VideoItemType.kt
+│       │   │               │   │   └── github
+│       │   │               │   │       ├── Commit.kt
+│       │   │               │   │       ├── Latest.kt
+│       │   │               │   │       ├── Release.kt
+│       │   │               │   │       └── Workflow.kt
+│       │   │               │   ├── network
+│       │   │               │   │   ├── GitHubDns.kt
+│       │   │               │   │   ├── HCookieJar.kt
+│       │   │               │   │   ├── HDns.kt
+│       │   │               │   │   ├── HProxySelector.kt
+│       │   │               │   │   ├── HUpdater.kt
+│       │   │               │   │   ├── HanimeNetwork.kt
+│       │   │               │   │   ├── ServiceCreator.kt
+│       │   │               │   │   ├── interceptor
+│       │   │               │   │   │   ├── CloudflareInterceptor.kt
+│       │   │               │   │   │   ├── SpeedLimitInterceptor.kt
+│       │   │               │   │   │   ├── SpeedLimitResponseBody.kt
+│       │   │               │   │   │   ├── UrlLoggingInterceptor.kt
+│       │   │               │   │   │   └── UserAgentInterceptor.kt
+│       │   │               │   │   └── service
+│       │   │               │   │       ├── HGitHubService.kt
+│       │   │               │   │       ├── HanimeBaseService.kt
+│       │   │               │   │       ├── HanimeCommentService.kt
+│       │   │               │   │       ├── HanimeMyListService.kt
+│       │   │               │   │       └── HanimeSubscriptionService.kt
+│       │   │               │   └── state
+│       │   │               │       ├── DownloadState.kt
+│       │   │               │       ├── PageLoadingState.kt
+│       │   │               │       ├── VideoLoadingState.kt
+│       │   │               │       └── WebsiteState.kt
+│       │   │               ├── ui
+│       │   │               │   ├── StateLayoutMixin.kt
+│       │   │               │   ├── activity
+│       │   │               │   │   ├── CloudflareActivity.kt
+│       │   │               │   │   ├── LoginActivity.kt
+│       │   │               │   │   ├── MainActivity.kt
+│       │   │               │   │   ├── QRcodeScannerActivity.kt
+│       │   │               │   │   ├── SettingsActivity.kt
+│       │   │               │   │   └── SettingsRouter.kt
+│       │   │               │   ├── adapter
+│       │   │               │   │   ├── AdapterLikeDataBindingPage.kt
+│       │   │               │   │   ├── AnnouncementAdapter.kt
+│       │   │               │   │   ├── AnnouncementCardAdapter.kt
+│       │   │               │   │   ├── BaseSingleDifferAdapter.kt
+│       │   │               │   │   ├── DelayAdapter.kt
+│       │   │               │   │   ├── DownloadedGroupListAdapter.kt
+│       │   │               │   │   ├── FixedGridLayoutManager.kt
+│       │   │               │   │   ├── HKeyframesRvAdapter.kt
+│       │   │               │   │   ├── HSearchTagAdapter.kt
+│       │   │               │   │   ├── HanimeAdvancedSearchHistoryAdapter.kt
+│       │   │               │   │   ├── HanimeDownloadedRvAdapter.kt
+│       │   │               │   │   ├── HanimeDownloadingRvAdapter.kt
+│       │   │               │   │   ├── HanimeMyListVideoAdapter.kt
+│       │   │               │   │   ├── HanimePreviewNewsRvAdapter.kt
+│       │   │               │   │   ├── HanimePreviewTourRvAdapter.kt
+│       │   │               │   │   ├── HanimeSearchHistoryRvAdapter.kt
+│       │   │               │   │   ├── HanimeVideoRvAdapter.kt
+│       │   │               │   │   ├── PlaylistRvAdapter.kt
+│       │   │               │   │   ├── ReleaseDateAdapter.kt
+│       │   │               │   │   ├── RvWrapper.kt
+│       │   │               │   │   ├── SharedHKeyframesRvAdapter.kt
+│       │   │               │   │   ├── SuperResolutionAdapter.kt
+│       │   │               │   │   ├── TranslationCacheAdapter.kt
+│       │   │               │   │   ├── VideoColumnTitleAdapter.kt
+│       │   │               │   │   ├── VideoCommentRvAdapter.kt
+│       │   │               │   │   ├── VideoSpeedAdapter.kt
+│       │   │               │   │   └── WatchHistoryRvAdapter.kt
+│       │   │               │   ├── fragment
+│       │   │               │   │   ├── ComposeItem.kt
+│       │   │               │   │   ├── ComposePreviewDataSource.kt
+│       │   │               │   │   ├── ComposeUtils.kt
+│       │   │               │   │   ├── IToolbarFragment.kt
+│       │   │               │   │   ├── LoginNeededFragmentMixin.kt
+│       │   │               │   │   ├── PermissionRequester.kt
+│       │   │               │   │   ├── PlaylistBottomSheetDialogFragment.kt
+│       │   │               │   │   ├── ToolbarHost.kt
+│       │   │               │   │   ├── TranslationCacheFragment.kt
+│       │   │               │   │   ├── TranslationSettingsFragment.kt
+│       │   │               │   │   ├── dailycheckin
+│       │   │               │   │   │   └── DailyCheckInFragment.kt
+│       │   │               │   │   ├── funny
+│       │   │               │   │   │   ├── FunnyTouchListener.kt
+│       │   │               │   │   │   └── SomeFunny.kt
+│       │   │               │   │   ├── home
+│       │   │               │   │   │   ├── DownloadFragment.kt
+│       │   │               │   │   │   ├── HomePageFragment.kt
+│       │   │               │   │   │   ├── MyFavVideoFragment.kt
+│       │   │               │   │   │   ├── MyPlayListFragmentV2.kt
+│       │   │               │   │   │   ├── MyPlaylistFragment.kt
+│       │   │               │   │   │   ├── MyWatchLaterFragment.kt
+│       │   │               │   │   │   ├── SubscriptionFragment.kt
+│       │   │               │   │   │   ├── WatchHistoryFragment.kt
+│       │   │               │   │   │   ├── download
+│       │   │               │   │   │   │   ├── DownloadedFragment.kt
+│       │   │               │   │   │   │   └── DownloadingFragment.kt
+│       │   │               │   │   │   ├── myplaylist
+│       │   │               │   │   │   │   ├── MyPlayListScreen.kt
+│       │   │               │   │   │   │   └── MyplayListBottomSheet.kt
+│       │   │               │   │   │   ├── preview
+│       │   │               │   │   │   │   ├── PreviewCommentFragment.kt
+│       │   │               │   │   │   │   └── PreviewFragment.kt
+│       │   │               │   │   │   └── subscription
+│       │   │               │   │   │       └── SubscriptionScreen.kt
+│       │   │               │   │   ├── search
+│       │   │               │   │   │   ├── HCheckBoxFragment.kt
+│       │   │               │   │   │   ├── HMultiChoicesDialog.kt
+│       │   │               │   │   │   ├── SearchFragment.kt
+│       │   │               │   │   │   └── SearchOptionsPopupFragment.kt
+│       │   │               │   │   ├── settings
+│       │   │               │   │   │   ├── DownloadSettingsFragment.kt
+│       │   │               │   │   │   ├── HKeyframeSettingsFragment.kt
+│       │   │               │   │   │   ├── HKeyframesFragment.kt
+│       │   │               │   │   │   ├── HomeSettingsFragment.kt
+│       │   │               │   │   │   ├── MpvPlayerSettings.kt
+│       │   │               │   │   │   ├── NetworkSettingsFragment.kt
+│       │   │               │   │   │   ├── PlayerSettingsFragment.kt
+│       │   │               │   │   │   └── SharedHKeyframesFragment.kt
+│       │   │               │   │   └── video
+│       │   │               │   │       ├── ChildCommentPopupFragment.kt
+│       │   │               │   │       ├── CommentFragment.kt
+│       │   │               │   │       ├── VideoFragment.kt
+│       │   │               │   │       └── VideoIntroductionFragment.kt
+│       │   │               │   ├── popup
+│       │   │               │   │   ├── CoilImageLoader.kt
+│       │   │               │   │   ├── HTimePickerPopup.kt
+│       │   │               │   │   └── ReplyPopup.kt
+│       │   │               │   ├── theme
+│       │   │               │   │   ├── Color.kt
+│       │   │               │   │   └── Theme.kt
+│       │   │               │   ├── view
+│       │   │               │   │   ├── BlurTransformation.kt
+│       │   │               │   │   ├── CenterLinearLayoutManager.kt
+│       │   │               │   │   ├── CollapsibleTags.kt
+│       │   │               │   │   ├── HOptionChip.kt
+│       │   │               │   │   ├── HanimeSearchBar.kt
+│       │   │               │   │   ├── HorizontalNestedScrollView.kt
+│       │   │               │   │   ├── LinearSmoothToStartScroller.kt
+│       │   │               │   │   ├── PlaylistHeader.kt
+│       │   │               │   │   ├── TranslatedTextView.kt
+│       │   │               │   │   ├── funcbar
+│       │   │               │   │   │   ├── Hanidapter.kt
+│       │   │               │   │   │   ├── Hanidock.kt
+│       │   │               │   │   │   ├── Hanidokitem.kt
+│       │   │               │   │   │   └── Hanidontroller.kt
+│       │   │               │   │   ├── pref
+│       │   │               │   │   │   ├── HPrivacyPreference.kt
+│       │   │               │   │   │   ├── MaterialDialogPreference.kt
+│       │   │               │   │   │   ├── MaterialEditTextPreference.kt
+│       │   │               │   │   │   └── MaterialSliderPreference.kt
+│       │   │               │   │   └── video
+│       │   │               │   │       ├── HJzvdStd.kt
+│       │   │               │   │       ├── HMediaKernel.kt
+│       │   │               │   │       ├── HanimeDataSource.kt
+│       │   │               │   │       └── VideoPlayerAppBarBehavior.kt
+│       │   │               │   └── viewmodel
+│       │   │               │       ├── AppViewModel.kt
+│       │   │               │       ├── CheckInCalendarViewModel.kt
+│       │   │               │       ├── CommentViewModel.kt
+│       │   │               │       ├── DownloadViewModel.kt
+│       │   │               │       ├── IHCsrfToken.kt
+│       │   │               │       ├── MainViewModel.kt
+│       │   │               │       ├── MyListViewModel.kt
+│       │   │               │       ├── MyPlayListViewModelV2.kt
+│       │   │               │       ├── MySubscriptionsViewModel.kt
+│       │   │               │       ├── PreviewCommentPrefetcher.kt
+│       │   │               │       ├── PreviewViewModel.kt
+│       │   │               │       ├── SearchViewModel.kt
+│       │   │               │       ├── SettingsViewModel.kt
+│       │   │               │       ├── VideoViewModel.kt
+│       │   │               │       └── mylist
+│       │   │               │           ├── FavSubViewModel.kt
+│       │   │               │           ├── PlaylistSubViewModel.kt
+│       │   │               │           └── WatchLaterSubViewModel.kt
+│       │   │               ├── util
+│       │   │               │   ├── Adapters.kt
+│       │   │               │   ├── AlertDialogs.kt
+│       │   │               │   ├── Animations.kt
+│       │   │               │   ├── AnimeShaders.kt
+│       │   │               │   ├── Colors.kt
+│       │   │               │   ├── CommentUtils.kt
+│       │   │               │   ├── Common.kt
+│       │   │               │   ├── Cookies.kt
+│       │   │               │   ├── Files.kt
+│       │   │               │   ├── Firebases.kt
+│       │   │               │   ├── HImageMeower.kt
+│       │   │               │   ├── Networks.kt
+│       │   │               │   ├── Parcels.kt
+│       │   │               │   ├── Permissions.kt
+│       │   │               │   ├── Preferences.kt
+│       │   │               │   ├── SafFileManager.kt
+│       │   │               │   ├── TextViews.kt
+│       │   │               │   ├── ThemeUtils.kt
+│       │   │               │   ├── Versions.kt
+│       │   │               │   └── Views.kt
+│       │   │               └── worker
+│       │   │                   ├── HUpdateWorker.kt
+│       │   │                   ├── HanimeDownloadManager.kt
+│       │   │                   ├── HanimeDownloadManagerV2.kt
+│       │   │                   ├── HanimeDownloadWorker.kt
+│       │   │                   └── WorkerMixin.kt
+│       │   └── res
+│       │       ├── anim
+│       │       │   ├── fade_in.xml
+│       │       │   ├── fade_out.xml
+│       │       │   ├── slide_in_left.xml
+│       │       │   ├── slide_in_right.xml
+│       │       │   ├── slide_out_left.xml
+│       │       │   └── slide_out_right.xml
+│       │       ├── color
+│       │       │   ├── nav_item_icon_color.xml
+│       │       │   ├── nav_item_state_list_background.xml
+│       │       │   └── nav_item_text_color.xml
+│       │       ├── drawable
+│       │       │   ├── akarin.png
+│       │       │   ├── apply_deep_links.png
+│       │       │   ├── baseline_add_24.xml
+│       │       │   ├── baseline_add_link_24.xml
+│       │       │   ├── baseline_advanced_search_24.xml
+│       │       │   ├── baseline_arrow_forward_ios_24.xml
+│       │       │   ├── baseline_atomic_24.xml
+│       │       │   ├── baseline_backup_24.xml
+│       │       │   ├── baseline_bug_report_24.xml
+│       │       │   ├── baseline_cache_24.xml
+│       │       │   ├── baseline_cert_24.xml
+│       │       │   ├── baseline_chip_24.xml
+│       │       │   ├── baseline_count_24.xml
+│       │       │   ├── baseline_count_down_24.xml
+│       │       │   ├── baseline_custom_24.xml
+│       │       │   ├── baseline_data_usage_24.xml
+│       │       │   ├── baseline_deband_24.xml
+│       │       │   ├── baseline_decoder_24.xml
+│       │       │   ├── baseline_delay_24.xml
+│       │       │   ├── baseline_domain_24.xml
+│       │       │   ├── baseline_edit_24.xml
+│       │       │   ├── baseline_error_outline_24.xml
+│       │       │   ├── baseline_export_24.xml
+│       │       │   ├── baseline_format_list_bulleted_24.xml
+│       │       │   ├── baseline_forum_24.xml
+│       │       │   ├── baseline_frame_inter_24.xml
+│       │       │   ├── baseline_frame_jump_24.xml
+│       │       │   ├── baseline_h_24.xml
+│       │       │   ├── baseline_hosts_24.xml
+│       │       │   ├── baseline_import_export.xml
+│       │       │   ├── baseline_import_export_24.xml
+│       │       │   ├── baseline_keyboard_arrow_down_24.xml
+│       │       │   ├── baseline_keyboard_arrow_up_24.xml
+│       │       │   ├── baseline_manage_24.xml
+│       │       │   ├── baseline_mobile_data_24.xml
+│       │       │   ├── baseline_more_horiz_24.xml
+│       │       │   ├── baseline_online_manage_24.xml
+│       │       │   ├── baseline_overtime_24.xml
+│       │       │   ├── baseline_path_24.xml
+│       │       │   ├── baseline_player_24.xml
+│       │       │   ├── baseline_prohibit_24.xml
+│       │       │   ├── baseline_refresh_24.xml
+│       │       │   ├── baseline_remove_circle_24.xml
+│       │       │   ├── baseline_render_24.xml
+│       │       │   ├── baseline_restore_24.xml
+│       │       │   ├── baseline_seek_24.xml
+│       │       │   ├── baseline_share_24.xml
+│       │       │   ├── baseline_share_first_24.xml
+│       │       │   ├── baseline_simp_to_trad_24.xml
+│       │       │   ├── baseline_sort_24.xml
+│       │       │   ├── baseline_speed2_24.xml
+│       │       │   ├── baseline_speed_24.xml
+│       │       │   ├── baseline_touch_24.xml
+│       │       │   ├── baseline_upload_24.xml
+│       │       │   ├── baseline_vpn_24.xml
+│       │       │   ├── bg_default_header.png
+│       │       │   ├── bottom_seek_progress.xml
+│       │       │   ├── cookies_intro1.png
+│       │       │   ├── frosted_glass.xml
+│       │       │   ├── gradient_black_transparent_90.xml
+│       │       │   ├── h_chan_angry.png
+│       │       │   ├── h_chan_happy.png
+│       │       │   ├── h_chan_sad.png
+│       │       │   ├── h_chan_speechless.png
+│       │       │   ├── ic_baseline_4k_24.xml
+│       │       │   ├── ic_baseline_access_time_24.xml
+│       │       │   ├── ic_baseline_alert_24.xml
+│       │       │   ├── ic_baseline_arrow_back_24.xml
+│       │       │   ├── ic_baseline_arrow_forward_24.xml
+│       │       │   ├── ic_baseline_book.xml
+│       │       │   ├── ic_baseline_cancel_24.xml
+│       │       │   ├── ic_baseline_check_circle_24.xml
+│       │       │   ├── ic_baseline_clear_all_24.xml
+│       │       │   ├── ic_baseline_close_24.xml
+│       │       │   ├── ic_baseline_comment_24.xml
+│       │       │   ├── ic_baseline_data_usage_24.xml
+│       │       │   ├── ic_baseline_delete_24.xml
+│       │       │   ├── ic_baseline_disable_24.xml
+│       │       │   ├── ic_baseline_download_24.xml
+│       │       │   ├── ic_baseline_favorite_24.xml
+│       │       │   ├── ic_baseline_favorite_border_24.xml
+│       │       │   ├── ic_baseline_fold_24.xml
+│       │       │   ├── ic_baseline_h_chan_single_color.xml
+│       │       │   ├── ic_baseline_help_24.xml
+│       │       │   ├── ic_baseline_history_24.xml
+│       │       │   ├── ic_baseline_home_24.xml
+│       │       │   ├── ic_baseline_info_24.xml
+│       │       │   ├── ic_baseline_language_24.xml
+│       │       │   ├── ic_baseline_list_24.xml
+│       │       │   ├── ic_baseline_mask.xml
+│       │       │   ├── ic_baseline_moon_24.xml
+│       │       │   ├── ic_baseline_more_time_24.xml
+│       │       │   ├── ic_baseline_newspaper_24.xml
+│       │       │   ├── ic_baseline_pantsu.xml
+│       │       │   ├── ic_baseline_pause_24.xml
+│       │       │   ├── ic_baseline_pause_24_tintwhite.xml
+│       │       │   ├── ic_baseline_play_arrow_24.xml
+│       │       │   ├── ic_baseline_play_arrow_24_tintwhite.xml
+│       │       │   ├── ic_baseline_play_circle_outline_24.xml
+│       │       │   ├── ic_baseline_reply_24.xml
+│       │       │   ├── ic_baseline_report_24.xml
+│       │       │   ├── ic_baseline_scan_24.xml
+│       │       │   ├── ic_baseline_search_24.xml
+│       │       │   ├── ic_baseline_send_24.xml
+│       │       │   ├── ic_baseline_settings_24.xml
+│       │       │   ├── ic_baseline_share_24.xml
+│       │       │   ├── ic_baseline_skip_24.xml
+│       │       │   ├── ic_baseline_speed_24.xml
+│       │       │   ├── ic_baseline_theme_24.xml
+│       │       │   ├── ic_baseline_thumb_down_alt_24.xml
+│       │       │   ├── ic_baseline_thumb_down_off_alt_24.xml
+│       │       │   ├── ic_baseline_thumb_up_alt_24.xml
+│       │       │   ├── ic_baseline_thumb_up_off_alt_24.xml
+│       │       │   ├── ic_baseline_translate_24.xml
+│       │       │   ├── ic_baseline_update_24.xml
+│       │       │   ├── ic_baseline_watch_later_24.xml
+│       │       │   ├── ic_clock.xml
+│       │       │   ├── ic_comments.xml
+│       │       │   ├── ic_ext_link.xml
+│       │       │   ├── ic_launcher_calc.webp
+│       │       │   ├── ic_launcher_cornhub.webp
+│       │       │   ├── ic_launcher_debug_background.xml
+│       │       │   ├── ic_launcher_new.webp
+│       │       │   ├── ic_launcher_xxt.webp
+│       │       │   ├── ic_oss.xml
+│       │       │   ├── ic_pip_mode.xml
+│       │       │   ├── ic_send_selector.xml
+│       │       │   ├── ic_setting_applock.xml
+│       │       │   ├── ic_setting_ci.xml
+│       │       │   ├── ic_setting_lang.xml
+│       │       │   ├── ic_subscribtion.xml
+│       │       │   ├── ic_video_quilty.xml
+│       │       │   ├── icon_circle_bg.xml
+│       │       │   ├── indicator_active.xml
+│       │       │   ├── indicator_inactive.xml
+│       │       │   ├── linear_gradient_90.xml
+│       │       │   ├── linear_gradient_90_notrans.xml
+│       │       │   ├── outline_home_24.xml
+│       │       │   ├── scaled_added_time.xml
+│       │       │   ├── search_bar_background.xml
+│       │       │   ├── shape_download_func_bar.xml
+│       │       │   ├── shape_preview_button_left.xml
+│       │       │   ├── shape_preview_button_right.xml
+│       │       │   └── shape_title_mask.xml
+│       │       ├── layout
+│       │       │   ├── activity_cloudflare.xml
+│       │       │   ├── activity_login.xml
+│       │       │   ├── activity_main.xml
+│       │       │   ├── activity_settings.xml
+│       │       │   ├── activity_video.xml
+│       │       │   ├── base_column_title.xml
+│       │       │   ├── delay_test_dialog.xml
+│       │       │   ├── dialog_announcement.xml
+│       │       │   ├── dialog_apply_deep_links.xml
+│       │       │   ├── dialog_download_group.xml
+│       │       │   ├── dialog_login.xml
+│       │       │   ├── dialog_modify_h_keyframe.xml
+│       │       │   ├── dialog_modify_h_keyframes.xml
+│       │       │   ├── dialog_playlist_modify_edit_text.xml
+│       │       │   ├── dialog_proxy.xml
+│       │       │   ├── fragment_bottom_sheet_list.xml
+│       │       │   ├── fragment_comment.xml
+│       │       │   ├── fragment_download.xml
+│       │       │   ├── fragment_h_keyframes.xml
+│       │       │   ├── fragment_home_page.xml
+│       │       │   ├── fragment_list_only.xml
+│       │       │   ├── fragment_page_list.xml
+│       │       │   ├── fragment_playlist.xml
+│       │       │   ├── fragment_preview.xml
+│       │       │   ├── fragment_preview_comment.xml
+│       │       │   ├── fragment_search.xml
+│       │       │   ├── fragment_translation_cache.xml
+│       │       │   ├── fragment_video.xml
+│       │       │   ├── fragment_video_introduction.xml
+│       │       │   ├── item_announcement.xml
+│       │       │   ├── item_announcement_card.xml
+│       │       │   ├── item_delay_result.xml
+│       │       │   ├── item_downloaded_group_header.xml
+│       │       │   ├── item_h_keyframe.xml
+│       │       │   ├── item_h_keyframes.xml
+│       │       │   ├── item_hanidock.xml
+│       │       │   ├── item_hanime_advanced_search_history.xml
+│       │       │   ├── item_hanime_downloaded.xml
+│       │       │   ├── item_hanime_downloading.xml
+│       │       │   ├── item_hanime_preview_news_pic.xml
+│       │       │   ├── item_hanime_preview_news_v2.xml
+│       │       │   ├── item_hanime_video.xml
+│       │       │   ├── item_hanime_video_simplified.xml
+│       │       │   ├── item_playlist.xml
+│       │       │   ├── item_preview_tour_simplified.xml
+│       │       │   ├── item_rv_wrapper.xml
+│       │       │   ├── item_search_history.xml
+│       │       │   ├── item_shared_h_keyframes.xml
+│       │       │   ├── item_simple_card.xml
+│       │       │   ├── item_simple_icon_r_with_text.xml
+│       │       │   ├── item_simple_icon_with_text.xml
+│       │       │   ├── item_translation_cache.xml
+│       │       │   ├── item_video_column_title.xml
+│       │       │   ├── item_video_comment.xml
+│       │       │   ├── item_video_introduction.xml
+│       │       │   ├── item_video_tag_chip.xml
+│       │       │   ├── item_watch_history.xml
+│       │       │   ├── jz_layout_speed.xml
+│       │       │   ├── layout_collapsible_tag.xml
+│       │       │   ├── layout_dialog_progress.xml
+│       │       │   ├── layout_empty_view.xml
+│       │       │   ├── layout_hanidock.xml
+│       │       │   ├── layout_hanime_search_bar.xml
+│       │       │   ├── layout_header_h_keyframes.xml
+│       │       │   ├── layout_jzvd_clarity.xml
+│       │       │   ├── layout_jzvd_clarity_item.xml
+│       │       │   ├── layout_jzvd_with_speed.xml
+│       │       │   ├── layout_playlist_header_v2.xml
+│       │       │   ├── layout_rv_scrollbars.xml
+│       │       │   ├── nav_header_ability.xml
+│       │       │   ├── pop_up_ext_h_time_picker.xml
+│       │       │   ├── pop_up_fragment_child_comment.xml
+│       │       │   ├── pop_up_fragment_search_options.xml
+│       │       │   ├── pop_up_hanime_search_tag.xml
+│       │       │   ├── pop_up_reply.xml
+│       │       │   └── pref_material_slider.xml
+│       │       ├── menu
+│       │       │   ├── menu_comment_sort.xml
+│       │       │   ├── menu_downloaded_toolbar.xml
+│       │       │   ├── menu_downloading_toolbar.xml
+│       │       │   ├── menu_main_nv.xml
+│       │       │   ├── menu_main_toolbar.xml
+│       │       │   ├── menu_my_list_toolbar.xml
+│       │       │   ├── menu_playlist_toolbar.xml
+│       │       │   ├── menu_preview_toolbar.xml
+│       │       │   ├── menu_translation_cache.xml
+│       │       │   └── menu_watch_history_toolbar.xml
+│       │       ├── mipmap-anydpi-v26
+│       │       │   ├── ic_launcher_calc.xml
+│       │       │   ├── ic_launcher_calc_round.xml
+│       │       │   ├── ic_launcher_cornhub.xml
+│       │       │   ├── ic_launcher_cornhub_round.xml
+│       │       │   ├── ic_launcher_debug.xml
+│       │       │   ├── ic_launcher_debug_round.xml
+│       │       │   ├── ic_launcher_new.xml
+│       │       │   ├── ic_launcher_new_round.xml
+│       │       │   ├── ic_launcher_xxt.xml
+│       │       │   └── ic_launcher_xxt_round.xml
+│       │       ├── mipmap-hdpi
+│       │       │   ├── ic_launcher_calc.webp
+│       │       │   ├── ic_launcher_calc_foreground.webp
+│       │       │   ├── ic_launcher_cornhub.webp
+│       │       │   ├── ic_launcher_cornhub_foreground.webp
+│       │       │   ├── ic_launcher_debug.webp
+│       │       │   ├── ic_launcher_debug_foreground.webp
+│       │       │   ├── ic_launcher_new.webp
+│       │       │   ├── ic_launcher_new_foreground.webp
+│       │       │   ├── ic_launcher_new_round.webp
+│       │       │   ├── ic_launcher_xxt.webp
+│       │       │   ├── ic_launcher_xxt_background.webp
+│       │       │   └── ic_launcher_xxt_foreground.webp
+│       │       ├── mipmap-mdpi
+│       │       │   ├── ic_launcher_calc.webp
+│       │       │   ├── ic_launcher_calc_foreground.webp
+│       │       │   ├── ic_launcher_cornhub.webp
+│       │       │   ├── ic_launcher_cornhub_foreground.webp
+│       │       │   ├── ic_launcher_debug.webp
+│       │       │   ├── ic_launcher_debug_foreground.webp
+│       │       │   ├── ic_launcher_new.webp
+│       │       │   ├── ic_launcher_new_foreground.webp
+│       │       │   ├── ic_launcher_new_round.webp
+│       │       │   ├── ic_launcher_xxt.webp
+│       │       │   ├── ic_launcher_xxt_background.webp
+│       │       │   └── ic_launcher_xxt_foreground.webp
+│       │       ├── mipmap-xhdpi
+│       │       │   ├── ic_launcher_calc.webp
+│       │       │   ├── ic_launcher_calc_foreground.webp
+│       │       │   ├── ic_launcher_cornhub.webp
+│       │       │   ├── ic_launcher_cornhub_foreground.webp
+│       │       │   ├── ic_launcher_debug.webp
+│       │       │   ├── ic_launcher_debug_foreground.webp
+│       │       │   ├── ic_launcher_new.webp
+│       │       │   ├── ic_launcher_new_foreground.webp
+│       │       │   ├── ic_launcher_new_round.webp
+│       │       │   ├── ic_launcher_xxt.webp
+│       │       │   ├── ic_launcher_xxt_background.webp
+│       │       │   └── ic_launcher_xxt_foreground.webp
+│       │       ├── mipmap-xxhdpi
+│       │       │   ├── ic_launcher_calc.webp
+│       │       │   ├── ic_launcher_calc_foreground.webp
+│       │       │   ├── ic_launcher_calc_round.webp
+│       │       │   ├── ic_launcher_cornhub.webp
+│       │       │   ├── ic_launcher_cornhub_foreground.webp
+│       │       │   ├── ic_launcher_cornhub_round.webp
+│       │       │   ├── ic_launcher_debug.webp
+│       │       │   ├── ic_launcher_debug_foreground.webp
+│       │       │   ├── ic_launcher_debug_round.webp
+│       │       │   ├── ic_launcher_new.webp
+│       │       │   ├── ic_launcher_new_foreground.webp
+│       │       │   ├── ic_launcher_new_round.webp
+│       │       │   ├── ic_launcher_xxt.webp
+│       │       │   ├── ic_launcher_xxt_background.webp
+│       │       │   ├── ic_launcher_xxt_foreground.webp
+│       │       │   └── ic_launcher_xxt_round.webp
+│       │       ├── mipmap-xxxhdpi
+│       │       │   ├── ic_launcher_calc.webp
+│       │       │   ├── ic_launcher_calc_foreground.webp
+│       │       │   ├── ic_launcher_calc_round.webp
+│       │       │   ├── ic_launcher_cornhub.webp
+│       │       │   ├── ic_launcher_cornhub_foreground.webp
+│       │       │   ├── ic_launcher_cornhub_round.webp
+│       │       │   ├── ic_launcher_debug.webp
+│       │       │   ├── ic_launcher_debug_foreground.webp
+│       │       │   ├── ic_launcher_debug_round.webp
+│       │       │   ├── ic_launcher_new.webp
+│       │       │   ├── ic_launcher_new_foreground.webp
+│       │       │   ├── ic_launcher_new_round.webp
+│       │       │   ├── ic_launcher_xxt.webp
+│       │       │   ├── ic_launcher_xxt_background.webp
+│       │       │   ├── ic_launcher_xxt_foreground.webp
+│       │       │   └── ic_launcher_xxt_round.webp
+│       │       ├── navigation
+│       │       │   ├── nav_main.xml
+│       │       │   └── nav_settings.xml
+│       │       ├── raw
+│       │       │   └── akarin.png
+│       │       ├── values
+│       │       │   ├── arrays.xml
+│       │       │   ├── bools.xml
+│       │       │   ├── colors.xml
+│       │       │   ├── dimens.xml
+│       │       │   ├── ic_launcher_background.xml
+│       │       │   ├── ic_launcher_calc_background.xml
+│       │       │   ├── ic_launcher_cornhub_background.xml
+│       │       │   ├── ic_launcher_new_background.xml
+│       │       │   ├── ids.xml
+│       │       │   ├── strings.xml
+│       │       │   └── themes.xml
+│       │       ├── values-en
+│       │       │   └── strings.xml
+│       │       ├── values-ja
+│       │       │   └── strings.xml
+│       │       ├── values-land
+│       │       │   └── dimens.xml
+│       │       ├── values-night
+│       │       │   └── colors.xml
+│       │       ├── values-zh-rCN
+│       │       │   └── strings.xml
+│       │       └── xml
+│       │           ├── backup_rules.xml
+│       │           ├── data_extraction_rules.xml
+│       │           ├── file_paths.xml
+│       │           ├── preferences_translation.xml
+│       │           ├── setting_mpv_player.xml
+│       │           ├── settings_download.xml
+│       │           ├── settings_h_keyframe.xml
+│       │           ├── settings_home.xml
+│       │           ├── settings_network.xml
+│       │           └── settings_player.xml
+│       └── test
+│           └── java
+│               └── com
+│                   └── yenaly
+│                       └── han1meviewer
+│                           └── ExampleUnitTest.kt
+├── build.gradle.kts
+├── buildSrc
+│   ├── build.gradle.kts
+│   └── src
+│       └── main
+│           └── java
+│               └── Config.kt
+├── develop
+├── gradle
+│   ├── libs.versions.toml
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── icon
+│   ├── icon_han1me_viewer-rurires.png
+│   ├── icon_han1me_viewer-rurires.svg
+│   └── icon_transparent_han1me_viewer-rurires.png
+├── r.txt
+├── readme_01.png
+├── readme_02.png
+├── readme_03.png
+├── readme_04.png
+├── readme_05.png
+├── readme_06.png
+├── readme_07.png
+├── settings.gradle.kts
+└── yenaly_libs
+    ├── build.gradle.kts
+    ├── consumer-rules.pro
+    ├── proguard-rules.pro
+    └── src
+        ├── androidTest
+        │   └── java
+        │       └── com
+        │           └── yenaly
+        │               └── yenaly_libs
+        │                   └── ExampleInstrumentedTest.kt
+        ├── main
+        │   ├── AndroidManifest.xml
+        │   ├── java
+        │   │   └── com
+        │   │       └── yenaly
+        │   │           └── yenaly_libs
+        │   │               ├── ActivityManager.kt
+        │   │               ├── SingletonHolder.kt
+        │   │               ├── base
+        │   │               │   ├── IViewBinding.kt
+        │   │               │   ├── YenalyActivity.kt
+        │   │               │   ├── YenalyApplication.kt
+        │   │               │   ├── YenalyBottomSheetDialogFragment.kt
+        │   │               │   ├── YenalyCrashHandler.kt
+        │   │               │   ├── YenalyFragment.kt
+        │   │               │   ├── YenalyInitializer.kt
+        │   │               │   ├── YenalyViewModel.kt
+        │   │               │   ├── dialog
+        │   │               │   │   └── YenalyCrashDialogActivity.kt
+        │   │               │   ├── frame
+        │   │               │   │   ├── FrameActivity.kt
+        │   │               │   │   └── FrameFragment.kt
+        │   │               │   ├── preference
+        │   │               │   │   ├── LongClickablePreference.kt
+        │   │               │   │   ├── LongClickableSwitchPreference.kt
+        │   │               │   │   └── MaterialSwitchPreference.kt
+        │   │               │   ├── settings
+        │   │               │   │   ├── YenalySettingsActivity.kt
+        │   │               │   │   └── YenalySettingsFragment.kt
+        │   │               │   └── view
+        │   │               │       ├── NestedScrollableHost.kt
+        │   │               │       └── RecyclerViewAtViewPager2.kt
+        │   │               └── utils
+        │   │                   ├── ActivityResultUtil.kt
+        │   │                   ├── AppUtil.kt
+        │   │                   ├── ArrayUtil.kt
+        │   │                   ├── Base64Util.kt
+        │   │                   ├── ClipboardUtil.kt
+        │   │                   ├── ContextUtil.kt
+        │   │                   ├── DeviceUtil.kt
+        │   │                   ├── FileUtil.kt
+        │   │                   ├── ImageUtil.kt
+        │   │                   ├── LanguageHelper.kt
+        │   │                   ├── LogUtil.kt
+        │   │                   ├── OrientationManager.kt
+        │   │                   ├── ResourceUtil.kt
+        │   │                   ├── ShareUtil.kt
+        │   │                   ├── SharedPreferencesUtil.kt
+        │   │                   ├── SingleFlowLaunch.kt
+        │   │                   ├── SnackBarUtil.kt
+        │   │                   ├── SystemStatusUtil.kt
+        │   │                   ├── TextUtil.kt
+        │   │                   ├── ToastUtil.kt
+        │   │                   ├── UnicodeUtil.kt
+        │   │                   ├── UriUtil.kt
+        │   │                   ├── _AesUtil.kt
+        │   │                   ├── _GsonUtil.kt
+        │   │                   ├── _IntentUtil.kt
+        │   │                   ├── _LazyUtil.kt
+        │   │                   ├── span
+        │   │                   │   ├── SpannedTextGenerator.kt
+        │   │                   │   ├── YenalyImageSpan.kt
+        │   │                   │   └── YenalyQuoteSpan.kt
+        │   │                   └── view
+        │   │                       ├── AppBarLayoutStateChangeListener.kt
+        │   │                       ├── BottomNavViewMediator.kt
+        │   │                       ├── BottomNavViewUtil.kt
+        │   │                       ├── BottomNavigationViewMediator.kt
+        │   │                       ├── ClickUtil.kt
+        │   │                       ├── EditTextUtil.kt
+        │   │                       ├── SimpleBottomNavViewMediator.kt
+        │   │                       ├── SimpleFragmentStateAdapter.kt
+        │   │                       ├── TabLayoutUtil.kt
+        │   │                       ├── ViewPagerUtil.kt
+        │   │                       ├── ViewUtil.kt
+        │   │                       └── YenalyHideBottomViewOnScrollBehavior.kt
+        │   └── res
+        │       ├── layout
+        │       │   ├── yenaly_activity_crash_dialog.xml
+        │       │   ├── yenaly_activity_settings.xml
+        │       │   └── yenaly_preference_switch_widget.xml
+        │       ├── values
+        │       │   ├── ids.xml
+        │       │   ├── strings.xml
+        │       │   └── styles.xml
+        │       └── xml
+        │           └── http_network_config.xml
+        └── test
+            └── java
+                └── com
+                    └── yenaly
+                        └── yenaly_libs
+                            └── UtilUnitTest.kt
+
+121 directories, 729 files

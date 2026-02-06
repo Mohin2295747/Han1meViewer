@@ -45,5 +45,10 @@
         android:id="@+id/translationSettingsFragment"
         android:name="com.yenaly.han1meviewer.ui.fragment.settings.TranslationSettingsFragment"
         android:label="Translation Settings" />
+        
+    <fragment
+        android:id="@+id/mlkitTranslationSettingsFragment"
+        android:name="com.yenaly.han1meviewer.ui.fragment.settings.MLKitTranslationSettingsFragment"
+        android:label="ML Kit Translation" />
 
 </navigation>
