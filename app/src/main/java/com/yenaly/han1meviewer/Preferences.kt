@@ -24,19 +24,9 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
 
 object Preferences {
-    /**
-     * [Preference][androidx.preference.PreferenceFragmentCompat]自帶的SP
-     */
     val preferenceSp: SharedPreferences
-        get() = PreferenceManager.getDefaultSharedPreferences(
-            applicationContext
-        )
+        get() = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
-    // app 相關
-
-    /**
-     * 是否登入，一般跟[loginCookie]一起賦值
-     */
     var isAlreadyLogin: Boolean
         get() = getSpValue(ALREADY_LOGIN, false)
         set(value) {
@@ -49,9 +39,6 @@ object Preferences {
     val savedUserId: String
         get() = preferenceSp.getString(SAVED_USER_ID,"") ?: ""
 
-    /**
-     * 保存的string格式的登入cookie
-     */
     var loginCookie
         get() = CookieString(getSpValue(LOGIN_COOKIE, EMPTY_STRING))
         set(value) {
@@ -62,14 +49,13 @@ object Preferences {
     val loginCookieStateFlow = MutableStateFlow(loginCookie)
 
     var cloudFlareCookie
-        get() = CookieString(getSpValue(CLOUDFLARE_COOKIE   , EMPTY_STRING))
+        get() = CookieString(getSpValue(CLOUDFLARE_COOKIE, EMPTY_STRING))
         set(value) {
             cloudFlareCookieStateFlow.value = value
             putSpValue(CLOUDFLARE_COOKIE, value.cookie)
         }
-    val cloudFlareCookieStateFlow = MutableStateFlow(cloudFlareCookie)
 
-    // 更新 相關
+    val cloudFlareCookieStateFlow = MutableStateFlow(cloudFlareCookie)
 
     private const val UPDATE_NODE_ID = "update_node_id"
 
@@ -87,7 +73,6 @@ object Preferences {
     val useCIUpdateChannel
         get() = preferenceSp.getBoolean(HomeSettingsFragment.USE_CI_UPDATE_CHANNEL, false)
 
-    // Check if show update dialog.
     @OptIn(ExperimentalTime::class)
     val isUpdateDialogVisible: Boolean
         get() {
@@ -97,8 +82,6 @@ object Preferences {
             return now > lastCheckTime + interval.days
         }
 
-    // 設定 相關
-
     val switchPlayerKernel: String
         get() = preferenceSp.getString(
             PlayerSettingsFragment.SWITCH_PLAYER_KERNEL,
@@ -106,10 +89,7 @@ object Preferences {
         ) ?: HMediaKernel.Type.ExoPlayer.name
 
     val showBottomProgress: Boolean
-        get() = preferenceSp.getBoolean(
-            PlayerSettingsFragment.SHOW_BOTTOM_PROGRESS,
-            true
-        )
+        get() = preferenceSp.getBoolean(PlayerSettingsFragment.SHOW_BOTTOM_PROGRESS, true)
 
     val playerSpeed: Float
         get() = preferenceSp.getString(
@@ -141,54 +121,35 @@ object Preferences {
     val fakeLauncherIcon: String
         get() = preferenceSp.getString(
             HomeSettingsFragment.FAKE_LAUNCHER_ICON,
-            "com.yenaly.han1meviewer.LauncherAliasDefault") ?: "com.yenaly.han1meviewer.LauncherAliasDefault"
+            "com.yenaly.han1meviewer.LauncherAliasDefault"
+        ) ?: "com.yenaly.han1meviewer.LauncherAliasDefault"
 
     val baseUrl: String
-        get() = preferenceSp.getString(NetworkSettingsFragment.DOMAIN_NAME, HANIME_URL[0])
-            ?: HANIME_URL[0]
+        get() = preferenceSp.getString(NetworkSettingsFragment.DOMAIN_NAME, HANIME_URL[0]) ?: HANIME_URL[0]
 
     val useBuiltInHosts: Boolean
         get() = preferenceSp.getBoolean(NetworkSettingsFragment.USE_BUILT_IN_HOSTS, false)
-
-    // 關鍵H幀 相關
 
     val whenCountdownRemind: Int
         get() = preferenceSp.getInt(
             HKeyframeSettingsFragment.WHEN_COUNTDOWN_REMIND,
             HJzvdStd.DEF_COUNTDOWN_SEC
-        ) * 1_000 // 越不了界，最大就30_000ms而已
+        ) * 1_000
 
     val showCommentWhenCountdown: Boolean
-        get() = preferenceSp.getBoolean(
-            HKeyframeSettingsFragment.SHOW_COMMENT_WHEN_COUNTDOWN,
-            false
-        )
+        get() = preferenceSp.getBoolean(HKeyframeSettingsFragment.SHOW_COMMENT_WHEN_COUNTDOWN, false)
 
     val hKeyframesEnable: Boolean
-        get() = preferenceSp.getBoolean(
-            HKeyframeSettingsFragment.H_KEYFRAMES_ENABLE,
-            true
-        )
+        get() = preferenceSp.getBoolean(HKeyframeSettingsFragment.H_KEYFRAMES_ENABLE, true)
 
     val sharedHKeyframesEnable: Boolean
-        get() = preferenceSp.getBoolean(
-            HKeyframeSettingsFragment.SHARED_H_KEYFRAMES_ENABLE,
-            true
-        )
+        get() = preferenceSp.getBoolean(HKeyframeSettingsFragment.SHARED_H_KEYFRAMES_ENABLE, true)
 
     val sharedHKeyframesUseFirst: Boolean
-        get() = preferenceSp.getBoolean(
-            HKeyframeSettingsFragment.SHARED_H_KEYFRAMES_USE_FIRST,
-            false
-        )
-
-    // 代理 相關
+        get() = preferenceSp.getBoolean(HKeyframeSettingsFragment.SHARED_H_KEYFRAMES_USE_FIRST, false)
 
     val proxyType: Int
-        get() = preferenceSp.getInt(
-            NetworkSettingsFragment.PROXY_TYPE,
-            HProxySelector.TYPE_SYSTEM
-        )
+        get() = preferenceSp.getInt(NetworkSettingsFragment.PROXY_TYPE, HProxySelector.TYPE_SYSTEM)
 
     val proxyIp: String
         get() = preferenceSp.getString(NetworkSettingsFragment.PROXY_IP, EMPTY_STRING).orEmpty()
@@ -196,31 +157,30 @@ object Preferences {
     val proxyPort: Int
         get() = preferenceSp.getInt(NetworkSettingsFragment.PROXY_PORT, -1)
 
-    // 隐私 相關
-
     val isAnalyticsEnabled: Boolean
         get() = preferenceSp.getBoolean(HomeSettingsFragment.USE_ANALYTICS, true)
-
-    // 下载 相關
 
     val downloadCountLimit: Int
         get() = preferenceSp.getInt(
             DownloadSettingsFragment.DOWNLOAD_COUNT_LIMIT,
-            // HanimeDownloadManager.MAX_CONCURRENT_DOWNLOAD_DEF
             HanimeDownloadManagerV2.MAX_CONCURRENT_DOWNLOAD_DEF
         )
 
     val collapseDownloadedGroup: Boolean
         get() = preferenceSp.getBoolean(HomeSettingsFragment.COLLAPSE_DOWNLOADED_GROUP,false)
+
     val isUsePrivateStorage: Boolean
         get() = preferenceSp.getBoolean(DownloadSettingsFragment.USE_PRIVATE_STORAGE,true)
+
     val safDownloadPath: String?
         get() = preferenceSp.getString(SafFileManager.KEY_TREE_URI,null)
 
     val useDarkMode: String
         get() = preferenceSp.getString(HomeSettingsFragment.USE_DARK_MODE,"always_off") ?: "always_off"
+
     val useDynamicColor: Boolean
         get() = preferenceSp.getBoolean(HomeSettingsFragment.USE_DYNAMIC_COLOR,false)
+
     val allowResumePlayback: Boolean
         get() = preferenceSp.getBoolean(HomeSettingsFragment.ALLOW_RESUME_PLAYBACK,true)
 
@@ -230,42 +190,36 @@ object Preferences {
     val disableMobileDataWarning: Boolean
         get() = preferenceSp.getBoolean(HomeSettingsFragment.DISABLE_MOBILE_DATA_WARNING,false)
 
-    /**
-     * MPV播放器设置
-     */
-    val mpvProfile: String // 预设模式
+    val mpvProfile: String
         get() = preferenceSp.getString(MpvPlayerSettings.MPV_PROFILE, "fast") ?: "fast"
 
-    val enableGPUNextRenderer: Boolean // gpu-next 渲染器
+    val enableGPUNextRenderer: Boolean
         get() = preferenceSp.getBoolean(MpvPlayerSettings.ENABLE_GPU_NEXT_RENDERER, false)
 
-    val mpvInterpolation: Boolean  // 插帧相关
+    val mpvInterpolation: Boolean
         get() = preferenceSp.getBoolean(MpvPlayerSettings.MPV_INTERPOLATION, false)
 
-    val mpvDeband: Boolean  // 去色带
+    val mpvDeband: Boolean
         get() = preferenceSp.getBoolean(MpvPlayerSettings.MPV_DEBAND, true)
 
-    val mpvFramedrop: Boolean  // GPU 繁忙时允许丢帧
+    val mpvFramedrop: Boolean
         get() = preferenceSp.getBoolean(MpvPlayerSettings.MPV_FRAMEDROP, true)
 
-    val mpvHwdec: String  // 硬件解码
+    val mpvHwdec: String
         get() = preferenceSp.getString(MpvPlayerSettings.MPV_HWDEC, "Auto")?: "Auto"
 
-    val mpvCacheSecs: Int  // 预缓存秒数
+    val mpvCacheSecs: Int
         get() = preferenceSp.getInt(MpvPlayerSettings.MPV_CACHE_SECS, 60)
 
-    val mpvTlsVerify: Boolean  // 忽略证书验证
+    val mpvTlsVerify: Boolean
         get() = preferenceSp.getBoolean(MpvPlayerSettings.MPV_TLS_VERIFY, true)
 
-    val mpvNetworkTimeout: Int  // 请求超时
+    val mpvNetworkTimeout: Int
         get() = preferenceSp.getInt(MpvPlayerSettings.MPV_NETWORK_TIMEOUT, 10)
 
     val customMpvParams: String
         get() = preferenceSp.getString(MpvPlayerSettings.CUSTOM_PARAMS,"")?: ""
 
-    /**
-     * 对应关系详见 [SpeedLimitInterceptor.SPEED_BYTES]
-     */
     val downloadSpeedLimit: Long
         get() {
             val index = preferenceSp.getInt(
@@ -275,75 +229,82 @@ object Preferences {
             return SpeedLimitInterceptor.SPEED_BYTES[index]
         }
 
-    // 翻譯 相關 (Translation Settings)
-
-    /**
-     * Whether translation is enabled
-     */
     var isTranslationEnabled: Boolean
         get() = getSpValue(IS_TRANSLATION_ENABLED, false)
         set(value) = putSpValue(IS_TRANSLATION_ENABLED, value)
 
-    /**
-     * DeepL API keys (set of strings)
-     */
     var translationApiKeys: Set<String>
         get() = getSpValue(TRANSLATION_API_KEYS, setOf<String>())
         set(value) = putSpValue(TRANSLATION_API_KEYS, value)
 
-    /**
-     * Monthly character limit per API key
-     */
     var translationMonthlyLimit: Int
         get() = getSpValue(TRANSLATION_MONTHLY_LIMIT, 500000)
         set(value) = putSpValue(TRANSLATION_MONTHLY_LIMIT, value)
 
-    /**
-     * Target language for translation (EN, DE, FR, etc.)
-     */
     var translationTargetLang: String
         get() = getSpValue(TRANSLATION_TARGET_LANG, "EN")
         set(value) = putSpValue(TRANSLATION_TARGET_LANG, value)
 
-    /**
-     * Maximum characters per API request
-     */
     var translationBatchSize: Int
         get() = getSpValue(TRANSLATION_BATCH_SIZE, 30000)
         set(value) = putSpValue(TRANSLATION_BATCH_SIZE, value)
 
-    /**
-     * Whether to translate titles
-     */
     var translateTitles: Boolean
         get() = getSpValue(TRANSLATE_TITLES, true)
         set(value) = putSpValue(TRANSLATE_TITLES, value)
 
-    /**
-     * Whether to translate descriptions
-     */
     var translateDescriptions: Boolean
         get() = getSpValue(TRANSLATE_DESCRIPTIONS, true)
         set(value) = putSpValue(TRANSLATE_DESCRIPTIONS, value)
 
-    /**
-     * Whether to translate comments
-     */
     var translateComments: Boolean
         get() = getSpValue(TRANSLATE_COMMENTS, true)
         set(value) = putSpValue(TRANSLATE_COMMENTS, value)
 
-    /**
-     * Whether to translate tags
-     */
     var translateTags: Boolean
         get() = getSpValue(TRANSLATE_TAGS, true)
         set(value) = putSpValue(TRANSLATE_TAGS, value)
 
-    // New: ML Kit settings
-    var useMLKitTranslation by booleanPreference(default = false)
-    var mlkitAutoDownload by booleanPreference(default = true)
-    var showTranslatedTags by booleanPreference(default = true)
-    var showTranslatedTitles by booleanPreference(default = true)
-    var mlkitLastDownloadTime by longPreference(default = 0L)
+    var useMLKitTranslation: Boolean
+        get() = getSpValue(USE_MLKIT_TRANSLATION, false)
+        set(value) = putSpValue(USE_MLKIT_TRANSLATION, value)
+
+    var mlkitAutoDownload: Boolean
+        get() = getSpValue(MLKIT_AUTO_DOWNLOAD, true)
+        set(value) = putSpValue(MLKIT_AUTO_DOWNLOAD, value)
+
+    var showTranslatedTags: Boolean
+        get() = getSpValue(SHOW_TRANSLATED_TAGS, true)
+        set(value) = putSpValue(SHOW_TRANSLATED_TAGS, value)
+
+    var showTranslatedTitles: Boolean
+        get() = getSpValue(SHOW_TRANSLATED_TITLES, true)
+        set(value) = putSpValue(SHOW_TRANSLATED_TITLES, value)
+
+    var mlkitLastDownloadTime: Long
+        get() = getSpValue(MLKIT_LAST_DOWNLOAD_TIME, 0L)
+        set(value) = putSpValue(MLKIT_LAST_DOWNLOAD_TIME, value)
+
+    companion object {
+        private const val ALREADY_LOGIN = "already_login"
+        private const val SAVED_USER_ID = "saved_user_id"
+        private const val LOGIN_COOKIE = "login_cookie"
+        private const val CLOUDFLARE_COOKIE = "cloudflare_cookie"
+        private const val UPDATE_NODE_ID = "update_node_id"
+        private const val EMPTY_STRING = ""
+        private const val IS_TRANSLATION_ENABLED = "is_translation_enabled"
+        private const val TRANSLATION_API_KEYS = "translation_api_keys"
+        private const val TRANSLATION_MONTHLY_LIMIT = "translation_monthly_limit"
+        private const val TRANSLATION_TARGET_LANG = "translation_target_lang"
+        private const val TRANSLATION_BATCH_SIZE = "translation_batch_size"
+        private const val TRANSLATE_TITLES = "translate_titles"
+        private const val TRANSLATE_DESCRIPTIONS = "translate_descriptions"
+        private const val TRANSLATE_COMMENTS = "translate_comments"
+        private const val TRANSLATE_TAGS = "translate_tags"
+        private const val USE_MLKIT_TRANSLATION = "use_mlkit_translation"
+        private const val MLKIT_AUTO_DOWNLOAD = "mlkit_auto_download"
+        private const val SHOW_TRANSLATED_TAGS = "show_translated_tags"
+        private const val SHOW_TRANSLATED_TITLES = "show_translated_titles"
+        private const val MLKIT_LAST_DOWNLOAD_TIME = "mlkit_last_download_time"
+    }
 }

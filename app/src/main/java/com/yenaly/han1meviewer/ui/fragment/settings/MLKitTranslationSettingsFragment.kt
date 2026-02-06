@@ -1,72 +1,41 @@
 package com.yenaly.han1meviewer.ui.fragment.settings
 
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import com.yenaly.han1meviewer.Preferences
 import com.yenaly.han1meviewer.R
 import com.yenaly.han1meviewer.logic.MLKitTranslator
 import com.yenaly.han1meviewer.logic.TranslationManager
-import com.yenaly.han1meviewer.ui.fragment.YenalySettingsFragment
+import com.yenaly.han1meviewer.ui.activity.SettingsRouter
+import com.yenaly.han1meviewer.ui.fragment.ToolbarHost
+import com.yenaly.yenaly_libs.base.settings.YenalySettingsFragment
+import com.yenaly.yenaly_libs.utils.ToastUtil
 import kotlinx.coroutines.*
 
-class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
+class MLKitTranslationSettingsFragment : YenalySettingsFragment(R.xml.settings_mlkit_translation) {
 
-    private lateinit var mlkitSwitch: SwitchPreferenceCompat
-    private lateinit var autoDownloadPref: SwitchPreferenceCompat
-    private lateinit var showTagsPref: SwitchPreferenceCompat
-    private lateinit var showTitlesPref: SwitchPreferenceCompat
-    private lateinit var downloadButton: Preference
-    private lateinit var deleteButton: Preference
-    private lateinit var statusPref: Preference
-    private lateinit var sizePref: Preference
-    
     private val translationManager by lazy {
         TranslationManager.getInstance(requireContext())
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(R.xml.settings_mlkit_translation, rootKey)
-
-        mlkitSwitch = findPreference("use_mlkit_translation")!!
-        autoDownloadPref = findPreference("mlkit_auto_download")!!
-        showTagsPref = findPreference("show_translated_tags")!!
-        showTitlesPref = findPreference("show_translated_titles")!!
-        downloadButton = findPreference("download_mlkit_model")!!
-        deleteButton = findPreference("delete_mlkit_model")!!
-        statusPref = findPreference("mlkit_model_status")!!
-        sizePref = findPreference("mlkit_model_size")!!
-
-        setupListeners()
-        updateStatus()
+    override fun onStart() {
+        super.onStart()
+        (activity as? ToolbarHost)?.setupToolbar(
+            getString(R.string.mlkit_translation_title),
+            canNavigateBack = true
+        )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupToolbar()
-    }
+    override fun onPreferencesCreated(savedInstanceState: Bundle?) {
+        val mlkitSwitch by safePreference<SwitchPreferenceCompat>("use_mlkit_translation")
+        val autoDownloadPref by safePreference<SwitchPreferenceCompat>("mlkit_auto_download")
+        val showTagsPref by safePreference<SwitchPreferenceCompat>("show_translated_tags")
+        val showTitlesPref by safePreference<SwitchPreferenceCompat>("show_translated_titles")
+        val downloadButton by safePreference<Preference>("download_mlkit_model")
+        val deleteButton by safePreference<Preference>("delete_mlkit_model")
+        val statusPref by safePreference<Preference>("mlkit_model_status")
+        val sizePref by safePreference<Preference>("mlkit_model_size")
 
-    private fun setupToolbar() {
-        (activity as? AppCompatActivity)?.supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            title = "ML Kit Translation"
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                findNavController().navigateUp()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun setupListeners() {
         mlkitSwitch.setOnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as Boolean
             if (enabled) {
@@ -84,13 +53,21 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
             deleteModel()
             true
         }
+
+        updateStatus()
     }
 
     private fun updateStatus() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             val status = withContext(Dispatchers.IO) {
                 translationManager.getMLKitStatus()
             }
+
+            val mlkitSwitch by safePreference<SwitchPreferenceCompat>("use_mlkit_translation")
+            val downloadButton by safePreference<Preference>("download_mlkit_model")
+            val deleteButton by safePreference<Preference>("delete_mlkit_model")
+            val statusPref by safePreference<Preference>("mlkit_model_status")
+            val sizePref by safePreference<Preference>("mlkit_model_size")
 
             val statusText = when (status) {
                 MLKitTranslator.ModelStatus.NOT_INITIALIZED -> "Not initialized"
@@ -102,11 +79,9 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
 
             statusPref.summary = statusText
 
-            // Update button visibility
             downloadButton.isVisible = status != MLKitTranslator.ModelStatus.DOWNLOADED
             deleteButton.isVisible = status == MLKitTranslator.ModelStatus.DOWNLOADED
 
-            // Update model size
             if (status == MLKitTranslator.ModelStatus.DOWNLOADED) {
                 val sizeMB = translationManager.getMLKitModelSize() / (1024 * 1024)
                 sizePref.summary = "${sizeMB} MB"
@@ -118,7 +93,7 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
 
     private fun checkAndDownloadModel() {
         if (Preferences.mlkitAutoDownload) {
-            viewLifecycleOwner.lifecycleScope.launch {
+            CoroutineScope(Dispatchers.Main).launch {
                 val status = withContext(Dispatchers.IO) {
                     translationManager.getMLKitStatus()
                 }
@@ -131,7 +106,10 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
     }
 
     private fun downloadModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
+            val statusPref by safePreference<Preference>("mlkit_model_status")
+            val downloadButton by safePreference<Preference>("download_mlkit_model")
+            
             statusPref.summary = "Downloading..."
             downloadButton.isEnabled = false
 
@@ -140,9 +118,9 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
             }
 
             if (success) {
-                showToast("Model downloaded successfully")
+                ToastUtil.showShort("Model downloaded successfully")
             } else {
-                showToast("Failed to download model")
+                ToastUtil.showShort("Failed to download model")
             }
 
             updateStatus()
@@ -151,15 +129,15 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
     }
 
     private fun deleteModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             val success = withContext(Dispatchers.IO) {
                 translationManager.deleteMLKitModel()
             }
 
             if (success) {
-                showToast("Model deleted")
+                ToastUtil.showShort("Model deleted")
             } else {
-                showToast("Failed to delete model")
+                ToastUtil.showShort("Failed to delete model")
             }
 
             updateStatus()

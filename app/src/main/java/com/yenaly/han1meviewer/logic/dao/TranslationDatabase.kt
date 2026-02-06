@@ -2,8 +2,10 @@ package com.yenaly.han1meviewer.logic.dao
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.yenaly.han1meviewer.logic.entity.TranslationCache
+import kotlinx.coroutines.flow.Flow
 
 @Database(entities = [TranslationCache::class], version = 2)
 abstract class TranslationDatabase : RoomDatabase() {

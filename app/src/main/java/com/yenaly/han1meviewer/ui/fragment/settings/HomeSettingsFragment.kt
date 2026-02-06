@@ -414,6 +414,13 @@ class HomeSettingsFragment : YenalySettingsFragment(R.xml.settings_home) {
             SettingsRouter.with(this).navigateWithinSettings(R.id.translationSettingsFragment)
             return@setOnPreferenceClickListener true
         }
+        
+        val mlkitSettings by safePreference<Preference>("mlkit_settings")
+        mlkitSettings?.setOnPreferenceClickListener {
+            SettingsRouter.with(this@HomeSettingsFragment)
+                .navigateWithinSettings(R.id.mlkitTranslationSettingsFragment)
+            true
+        }
         useCIUpdateChannel.apply {
             setOnPreferenceChangeListener { _, _ ->
                 AppViewModel.getLatestVersion()
@@ -456,14 +463,6 @@ class HomeSettingsFragment : YenalySettingsFragment(R.xml.settings_home) {
                 true
             }
         }
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-    setPreferencesFromResource(R.xml.settings_home, rootKey)
-    
-    findPreference<Preference>("mlkit_settings_from_home")?.setOnPreferenceClickListener {
-        findNavController().navigate(R.id.mlkitTranslationSettingsFragment)
-        true
-    }
-}
 
         fakeLauncherIcon.apply {
         //    summary = getString(R.string.select_fake_icon)

@@ -2,6 +2,7 @@ package com.yenaly.han1meviewer.logic
 
 import android.content.Context
 import android.util.Log
+import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
@@ -70,8 +71,9 @@ class MLKitTranslator private constructor(context: Context) {
         translationCache[text]?.let { return it }
 
         return try {
+            val task = translator?.translate(text)
             val result = withContext(Dispatchers.IO) {
-                translator?.translate(text)?.await()
+                task?.let { Tasks.await(it) }
             } ?: text
 
             translationCache[text] = result
@@ -106,13 +108,15 @@ class MLKitTranslator private constructor(context: Context) {
     fun isReady(): Boolean = isInitialized.get()
 
     fun getModelSize(): Long {
-        return 40 * 1024 * 1024 // 40MB estimated
+        return 40 * 1024 * 1024
     }
 
     suspend fun deleteModel() {
         translator?.let {
             try {
-                it.deleteDownloadedModel().await()
+                withContext(Dispatchers.IO) {
+                    Tasks.await(it.deleteDownloadedModel())
+                }
                 translator = null
                 isInitialized.set(false)
                 clearCache()
@@ -126,9 +130,10 @@ class MLKitTranslator private constructor(context: Context) {
         return try {
             if (translator == null) return ModelStatus.NOT_INITIALIZED
             
-            val isDownloaded = translator?.isModelDownloaded() ?: false
-            
-            if (isDownloaded) ModelStatus.DOWNLOADED else ModelStatus.NOT_DOWNLOADED
+            withContext(Dispatchers.IO) {
+                val isDownloaded = Tasks.await(translator?.isModelDownloaded) ?: false
+                if (isDownloaded) ModelStatus.DOWNLOADED else ModelStatus.NOT_DOWNLOADED
+            }
         } catch (e: Exception) {
             ModelStatus.ERROR
         }
