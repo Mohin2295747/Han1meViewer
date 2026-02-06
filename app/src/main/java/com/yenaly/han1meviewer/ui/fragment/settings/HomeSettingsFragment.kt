@@ -415,7 +415,7 @@ class HomeSettingsFragment : YenalySettingsFragment(R.xml.settings_home) {
             return@setOnPreferenceClickListener true
         }
         
-        val mlkitSettings by safePreference<Preference>("mlkit_settings")
+        val mlkitSettings by safePreference<Preference>("mlkit_settings_from_home")
         mlkitSettings?.setOnPreferenceClickListener {
             SettingsRouter.with(this@HomeSettingsFragment)
                 .navigateWithinSettings(R.id.mlkitTranslationSettingsFragment)
