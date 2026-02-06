@@ -188,7 +188,6 @@ class TranslationManager private constructor(context: Context) {
         val apiKey = getNextApiKey(texts.sumOf { it.length }) ?: throw TranslationException("No available API key")
 
         val formBody = FormBody.Builder()
-            .add("auth_key", apiKey.key)
             .add("target_lang", targetLang)
             .add("source_lang", "ZH")
 
@@ -197,6 +196,7 @@ class TranslationManager private constructor(context: Context) {
 
         val request = Request.Builder()
             .url("https://api-free.deepl.com/v2/translate")
+            .addHeader("Authorization", "DeepL-Auth-Key ${apiKey.key}")
             .post(formBody.build())
             .build()
 
