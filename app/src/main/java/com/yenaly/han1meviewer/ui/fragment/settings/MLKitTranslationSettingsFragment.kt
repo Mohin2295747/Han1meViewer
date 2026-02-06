@@ -1,6 +1,10 @@
 package com.yenaly.han1meviewer.ui.fragment.settings
 
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import com.yenaly.han1meviewer.Preferences
 import com.yenaly.han1meviewer.R
@@ -38,6 +42,28 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
 
         setupListeners()
         updateStatus()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupToolbar()
+    }
+
+    private fun setupToolbar() {
+        (activity as? AppCompatActivity)?.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            title = "ML Kit Translation"
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                findNavController().navigateUp()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setupListeners() {
@@ -103,30 +129,6 @@ class MLKitTranslationSettingsFragment : YenalySettingsFragment() {
             }
         }
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    
-    // Setup toolbar with back button
-    setupToolbar()
-}
-
-private fun setupToolbar() {
-    (activity as? AppCompatActivity)?.supportActionBar?.apply {
-        setDisplayHomeAsUpEnabled(true)
-        title = "ML Kit Translation"
-    }
-}
-
-// Handle back button press
-override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    return when (item.itemId) {
-        android.R.id.home -> {
-            findNavController().navigateUp()
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
-    }
-}
 
     private fun downloadModel() {
         viewLifecycleOwner.lifecycleScope.launch {

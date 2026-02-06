@@ -2,9 +2,9 @@ package com.yenaly.han1meviewer.logic
 
 import android.content.Context
 import android.util.Log
-import androidx.room.*
 import com.yenaly.han1meviewer.Preferences
-import com.yenaly.han1meviewer.logic.MLKitTranslator
+import com.yenaly.han1meviewer.logic.dao.TranslationCacheDao
+import com.yenaly.han1meviewer.logic.entity.TranslationCache
 import com.yenaly.han1meviewer.logic.exception.TranslationException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -15,71 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 const val TEXT_SEPARATOR = "♧¥"
 const val TAG_SEPARATOR = "{"
-
-@Entity(tableName = "translation_cache")
-data class TranslationCache(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val originalText: String,
-    val translatedText: String,
-    val sourceLang: String = "ZH",
-    val targetLang: String = "EN",
-    val contentType: ContentType,
-    val videoCode: String? = null,
-    val timestamp: Long = System.currentTimeMillis(),
-    val apiKeyUsed: String = "",
-    val charsConsumed: Int = 0
-) {
-    enum class ContentType {
-        TITLE, DESCRIPTION, COMMENT, TAG, ARTIST_NAME, OTHER
-    }
-}
-
-@Dao
-interface TranslationCacheDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(cache: TranslationCache)
-
-    @Query("SELECT * FROM translation_cache WHERE originalText = :original AND targetLang = :targetLang AND contentType = :contentType")
-    suspend fun get(original: String, targetLang: String, contentType: TranslationCache.ContentType): TranslationCache?
-
-    @Query("SELECT * FROM translation_cache WHERE videoCode = :videoCode ORDER BY timestamp DESC")
-    suspend fun getByVideoCode(videoCode: String): List<TranslationCache>
-
-    @Query("SELECT * FROM translation_cache ORDER BY timestamp DESC")
-    fun getAll(): Flow<List<TranslationCache>>
-
-    @Query("DELETE FROM translation_cache WHERE id = :id")
-    suspend fun delete(id: Int)
-
-    @Query("DELETE FROM translation_cache WHERE contentType = :contentType")
-    suspend fun deleteByType(contentType: TranslationCache.ContentType)
-
-    @Query("DELETE FROM translation_cache")
-    suspend fun deleteAll()
-
-    @Query("SELECT SUM(charsConsumed) FROM translation_cache WHERE apiKeyUsed = :apiKey AND timestamp >= :startTime AND timestamp <= :endTime")
-    suspend fun getCharsConsumed(apiKey: String, startTime: Long, endTime: Long): Long
-}
-
-@Database(entities = [TranslationCache::class], version = 1)
-abstract class TranslationDatabase : RoomDatabase() {
-    abstract fun cacheDao(): TranslationCacheDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: TranslationDatabase? = null
-
-        fun getInstance(context: Context): TranslationDatabase {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
-                    context.applicationContext,
-                    TranslationDatabase::class.java,
-                    "translation.db"
-                ).fallbackToDestructiveMigration().build().also { INSTANCE = it }
-            }
-        }
-    }
-}
 
 data class TranslationApiKey(
     val key: String,
@@ -113,11 +48,17 @@ data class TranslationApiKey(
 }
 
 class TranslationManager private constructor(context: Context) {
-    private val cacheDao = TranslationDatabase.getInstance(context).cacheDao()
+    private val database = TranslationDatabase.getInstance(context)
+    private val cacheDao = database.cacheDao()
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
+
+    private val mlKitTranslator by lazy {
+        MLKitTranslator.getInstance(context)
+    }
+    private val appContext = context.applicationContext
 
     private var apiKeys = mutableListOf<TranslationApiKey>()
     private var currentApiKeyIndex = 0
@@ -141,10 +82,6 @@ class TranslationManager private constructor(context: Context) {
                 }
             }
         }
-    private val mlKitTranslator by lazy {
-        MLKitTranslator.getInstance(context)
-    }
-    private val context = context.applicationContext
     }
 
     fun initialize() {
@@ -155,6 +92,7 @@ class TranslationManager private constructor(context: Context) {
                 apiKeys.add(TranslationApiKey(key, Preferences.translationMonthlyLimit))
             }
         }
+        
         if (Preferences.useMLKitTranslation) {
             // When ML Kit is enabled, ignore DeepL settings and force translate everything
             isEnabled = true
@@ -228,7 +166,7 @@ class TranslationManager private constructor(context: Context) {
                     targetLang = targetLang,
                     contentType = contentType,
                     videoCode = videoCode,
-                    translationEngine = TranslationCache.TranslationEngine.MLKIT, // IMPORTANT
+                    translationEngine = TranslationCache.TranslationEngine.MLKIT,
                     charsConsumed = originalText.length
                 )
             )
@@ -334,6 +272,7 @@ class TranslationManager private constructor(context: Context) {
         if (Preferences.useMLKitTranslation) {
             return translateWithMLKit(originalText, contentType, videoCode, forceFresh)
         }
+        
         if (!isEnabled || originalText.isBlank()) return originalText
 
         if (!forceFresh) {
@@ -362,7 +301,8 @@ class TranslationManager private constructor(context: Context) {
                     contentType = contentType,
                     videoCode = videoCode,
                     apiKeyUsed = apiKeys.getOrNull(currentApiKeyIndex)?.key ?: "",
-                    charsConsumed = originalText.length
+                    charsConsumed = originalText.length,
+                    translationEngine = TranslationCache.TranslationEngine.DEEPL
                 )
             )
 
@@ -378,6 +318,11 @@ class TranslationManager private constructor(context: Context) {
         contentType: TranslationCache.ContentType,
         videoCode: String? = null
     ): List<String> {
+        // Handle ML Kit translation
+        if (Preferences.useMLKitTranslation) {
+            return mlKitTranslator.translateBatch(texts)
+        }
+        
         if (!isEnabled || texts.isEmpty()) return texts
 
         val results = MutableList(texts.size) { "" }
@@ -417,7 +362,8 @@ class TranslationManager private constructor(context: Context) {
                             contentType = contentType,
                             videoCode = videoCode,
                             apiKeyUsed = apiKeys.getOrNull(currentApiKeyIndex)?.key ?: "",
-                            charsConsumed = batch[batchIndex].length
+                            charsConsumed = batch[batchIndex].length,
+                            translationEngine = TranslationCache.TranslationEngine.DEEPL
                         )
                     )
                 }
@@ -433,6 +379,10 @@ class TranslationManager private constructor(context: Context) {
     }
 
     suspend fun translateTags(tags: List<String>, videoCode: String? = null): List<String> {
+        if (Preferences.useMLKitTranslation) {
+            return mlKitTranslator.translateBatch(tags)
+        }
+        
         if (!isEnabled || !translateTags || tags.isEmpty()) return tags
 
         val joinedTags = tags.joinToString(TAG_SEPARATOR)
@@ -453,7 +403,8 @@ class TranslationManager private constructor(context: Context) {
                     contentType = TranslationCache.ContentType.TAG,
                     videoCode = videoCode,
                     apiKeyUsed = apiKeys.getOrNull(currentApiKeyIndex)?.key ?: "",
-                    charsConsumed = joinedTags.length
+                    charsConsumed = joinedTags.length,
+                    translationEngine = TranslationCache.TranslationEngine.DEEPL
                 )
             )
 
@@ -475,11 +426,15 @@ class TranslationManager private constructor(context: Context) {
         val byApiKey = allCache.groupBy { it.apiKeyUsed }
             .mapValues { it.value.sumOf { cache -> cache.charsConsumed } }
 
+        val byEngine = allCache.groupBy { it.translationEngine }
+            .mapValues { it.value.size }
+
         return mapOf(
             "totalChars" to totalChars,
             "totalItems" to totalItems,
             "byType" to byType,
             "byApiKey" to byApiKey,
+            "byEngine" to byEngine,
             "apiKeys" to apiKeys.map { key ->
                 mapOf(
                     "key" to key.key.take(8) + "..." + key.key.takeLast(4),
@@ -488,41 +443,42 @@ class TranslationManager private constructor(context: Context) {
                     "remaining" to key.monthlyLimit - key.charsUsedThisMonth.get(),
                     "isActive" to key.isActive
                 )
-            }
+            },
+            "mlKitStatus" to getMLKitStatus().name
         )
     }
     
     // ML Kit specific methods
-fun getMLKitStatus(): MLKitTranslator.ModelStatus {
-    return try {
-        runBlocking {
-            mlKitTranslator.checkModelStatus()
+    fun getMLKitStatus(): MLKitTranslator.ModelStatus {
+        return try {
+            runBlocking {
+                mlKitTranslator.checkModelStatus()
+            }
+        } catch (e: Exception) {
+            MLKitTranslator.ModelStatus.ERROR
         }
-    } catch (e: Exception) {
-        MLKitTranslator.ModelStatus.ERROR
     }
-}
 
-suspend fun downloadMLKitModel(): Boolean {
-    return try {
-        mlKitTranslator.initialize()
-        delay(5000)
-        mlKitTranslator.isReady()
-    } catch (e: Exception) {
-        false
+    suspend fun downloadMLKitModel(): Boolean {
+        return try {
+            mlKitTranslator.initialize()
+            delay(5000)
+            mlKitTranslator.isReady()
+        } catch (e: Exception) {
+            false
+        }
     }
-}
 
-fun getMLKitModelSize(): Long = mlKitTranslator.getModelSize()
+    fun getMLKitModelSize(): Long = mlKitTranslator.getModelSize()
 
-suspend fun deleteMLKitModel(): Boolean {
-    return try {
-        mlKitTranslator.deleteModel()
-        true
-    } catch (e: Exception) {
-        false
+    suspend fun deleteMLKitModel(): Boolean {
+        return try {
+            mlKitTranslator.deleteModel()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
-}
 
     suspend fun getAllCacheItems(): List<TranslationCache> {
         return cacheDao.getAll().first()
