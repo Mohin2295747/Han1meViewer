@@ -450,7 +450,7 @@ class TranslationManager private constructor(context: Context) {
     }
     
     // ML Kit specific methods
-    fun getMLKitStatus(): MLKitTranslator.ModelStatus {
+    suspend fun getMLKitStatus(): MLKitTranslator.ModelStatus {
         return try {
             mlKitTranslator.checkModelStatus()
         } catch (e: Exception) {
