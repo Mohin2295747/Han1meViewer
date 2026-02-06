@@ -70,7 +70,7 @@ class HanimeApplication : YenalyApplication() {
         }
 
         TranslationManager.getInstance(this).initialize()
-        Parser.initialize(this)
+        Parser.initialize(applicationContext)
 
         appScope.launch {
             TranslationMigrationHelper.migrateIfNeeded(this@HanimeApplication)

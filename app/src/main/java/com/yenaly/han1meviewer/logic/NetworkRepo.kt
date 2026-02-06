@@ -29,15 +29,7 @@ import org.json.JSONObject
 import retrofit2.Response
 import javax.net.ssl.SSLHandshakeException
 
-/**
- * @project Hanime1
- * @author Yenaly Liew
- * @time 2022/06/08 008 22:38
- */
 object NetworkRepo {
-
-    //<editor-fold desc="Hanime">
-
     fun getHomePage() = websiteIOFlow(
         request = { HanimeNetwork.hanimeService.getHomePage() },
         action = Parser::homePageVer2
@@ -68,14 +60,10 @@ object NetworkRepo {
         action = Parser::hanimePreview
     )
 
-    //获取订阅或者可以说是关注列表及它们的更新
     fun getMySubscriptions(page: Int) = websiteIOFlow(
         request = { HanimeNetwork.hanimeService.getMySubscriptions(page) },
         action = Parser::getMySubscriptions
     )
-    //</editor-fold>
-
-    //<editor-fold desc="My List">
 
     fun getMyListItems(userId: String, listType: Any, page: Int) = pageIOFlow(
         request = {
@@ -83,10 +71,10 @@ object NetworkRepo {
                 is String ->
                     HanimeNetwork.myListService.getMyListItems(userId, listType, page)
 
-                is MyListType ->
+                is MyListType -> 
                     HanimeNetwork.myListService.getMyListItems(userId, listType.value, page)
 
-                else ->
+                else -> 
                     throw IllegalArgumentException("typeOrId must be String or MyListType")
             }
         },
@@ -114,13 +102,13 @@ object NetworkRepo {
                         csrfToken = token
                     )
 
-                is MyListType ->
+                is MyListType -> 
                     HanimeNetwork.myListService.deleteMyListItems(
                         typeOrCode.value, videoCode,
                         csrfToken = token
                     )
 
-                else ->
+                else -> 
                     throw IllegalArgumentException("typeOrId must be String or MyListType")
             }
         }
@@ -130,18 +118,17 @@ object NetworkRepo {
         if (videoCode == returnVideoCode) {
             return@websiteIOFlow WebsiteState.Success(position)
         }
-
         return@websiteIOFlow WebsiteState.Error(IllegalStateException("cannot delete it ?!"))
     }
 
-    fun getPlaylists(page: Int, userId: String ) = websiteIOFlow(
+    fun getPlaylists(page: Int, userId: String) = websiteIOFlow(
         request = { HanimeNetwork.myListService.getPlaylists(userId, page) },
         action = Parser::playlists
     )
 
     fun addToMyFavVideo(
         videoCode: String,
-        likeStatus: Boolean, // false => "": add fav; true => "1": cancel fav;
+        likeStatus: Boolean,
         currentUserId: String?,
         token: String?,
     ) = websiteIOFlow(
@@ -214,10 +201,6 @@ object NetworkRepo {
         )
     }
 
-    //</editor-fold>
-
-    //<editor-fold desc="Comment">
-
     fun getComments(type: String, code: String) = websiteIOFlow(
         request = { HanimeNetwork.commentService.getComments(type, code) },
         action = Parser::comments
@@ -265,12 +248,12 @@ object NetworkRepo {
         csrfToken: String?,
         commentPlace: CommentPlace,
         foreignId: String?,
-        isPositive: Boolean, // 你選擇的是讚還是踩，1是讚，0是踩
+        isPositive: Boolean,
         likeUserId: String?,
         commentLikesCount: Int,
         commentLikesSum: Int,
-        likeCommentStatus: Boolean, // 你之前有沒有點過讚，1是0否
-        unlikeCommentStatus: Boolean, // 你之前有沒有點過踩，1是0否
+        likeCommentStatus: Boolean,
+        unlikeCommentStatus: Boolean,
         commentPosition: Int, comment: VideoComments.VideoComment,
     ) = websiteIOFlow(
         request = {
@@ -312,15 +295,10 @@ object NetworkRepo {
         action = Parser::reportCommentResponse
     )
 
-    //</editor-fold>
-
-    //<editor-fold desc="Subscription">
-
     fun subscribeArtist(
         csrfToken: String?,
         userId: String,
         artistId: String,
-        // 这里表示目标状态
         status: Boolean,
     ) = websiteIOFlow(
         request = {
@@ -333,10 +311,6 @@ object NetworkRepo {
         Log.d("subscribe_artist_body", it)
         return@websiteIOFlow WebsiteState.Success(status)
     }
-
-    //</editor-fold>
-
-    //<editor-fold desc="Base">
 
     fun getLatestVersion(forceCheck: Boolean = true) = flow {
         emit(WebsiteState.Loading)
@@ -354,39 +328,28 @@ object NetworkRepo {
 
     fun login(email: String, password: String) = flow {
         emit(WebsiteState.Loading)
-        // 首先获取token
         val loginPage = HanimeNetwork.hanimeService.getLoginPage()
         val token = loginPage.body()?.string()?.let(Parser::extractTokenFromLoginPage)
         val req = HanimeNetwork.hanimeService.login(token, email, password)
         if (req.isSuccessful) {
-            // 再次获取登录页面，如果失败则返回 cookie
-            // 因为登录成功再次访问 login 会 404，这是判断是否登录成功的方法
             val loginPageAgain = HanimeNetwork.hanimeService.getLoginPage()
             if (loginPageAgain.code() == 404) {
-                // Cookie 會返回 XSRF-TOKEN 和 hanime1_session，我們只需要後者
-                // 错误的，还需要 remember_web 字段！但我没找到！
                 Log.d("login_headers", req.headers().toMultimap().toString())
                 emit(WebsiteState.Success(req.headers().values("Set-Cookie")))
             } else {
                 emit(WebsiteState.Error(IllegalStateException(getString(R.string.account_or_password_wrong))))
             }
         } else {
-            // 雙重保險
             emit(WebsiteState.Error(IllegalStateException(getString(R.string.account_or_password_wrong))))
         }
     }.catch { e ->
         emit(WebsiteState.Error(handleException(e)))
     }.flowOn(Dispatchers.IO)
 
-    /**
-     * 用于单网页的情况
-     *
-     * @param permittedSuccessCode 用于处理特殊情况，比如[NetworkRepo.modifyPlaylist]需要302成功
-     */
     private fun <T> websiteIOFlow(
         request: suspend () -> Response<ResponseBody>,
         permittedSuccessCode: IntArray? = null,
-        action: (String) -> WebsiteState<T>,
+        action: suspend (String) -> WebsiteState<T>,
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.body()?.string()
@@ -400,12 +363,9 @@ object NetworkRepo {
         emit(WebsiteState.Error(handleException(e)))
     }.flowOn(Dispatchers.IO)
 
-    /**
-     * 用于有page分页的情况
-     */
     private fun <T> pageIOFlow(
         request: suspend () -> Response<ResponseBody>,
-        action: (String) -> PageLoadingState<T>,
+        action: suspend (String) -> PageLoadingState<T>,
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.body()?.string()
@@ -418,12 +378,9 @@ object NetworkRepo {
         emit(PageLoadingState.Error(handleException(e)))
     }.flowOn(Dispatchers.IO)
 
-    /**
-     * 用于影片界面
-     */
     private fun <T> videoIOFlow(
         request: suspend () -> Response<ResponseBody>,
-        action: (String) -> VideoLoadingState<T>,
+        action: suspend (String) -> VideoLoadingState<T>,
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.body()?.string()
@@ -444,16 +401,15 @@ object NetworkRepo {
                     "you have been blocked" in body ->
                         throw IPBlockedException(getString(R.string.do_not_use_japan_ip))
 
-                    "Just a moment" in body ->
+                    "Just a moment" in body -> 
                         throw CloudFlareBlockedException(getString(CloudFlareBlockedException.localizedMessages.random()))
 
-                    else ->
-                        throw HanimeNotFoundException(getString(R.string.video_might_not_exist)) // 主要出現在影片界面，當你v數不大時會報403
+                    else -> 
+                        throw HanimeNotFoundException(getString(R.string.video_might_not_exist))
                 }
             } else throw IllegalStateException("$code ${message()}")
 
-            500 -> throw HanimeNotFoundException(getString(R.string.video_might_not_exist)) // 主要出現在影片界面，當你v數很大時會報500
-
+            500 -> throw HanimeNotFoundException(getString(R.string.video_might_not_exist))
             404 -> if (!isAlreadyLogin) {
                 throw IllegalStateException(getString(R.string.not_logged_in_currently))
             } else {
@@ -483,8 +439,6 @@ object NetworkRepo {
             }
         }
     }
-
-    //</editor-fold>
 
     private fun getString(resId: Int) = applicationContext.getString(resId)
 }
