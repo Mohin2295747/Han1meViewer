@@ -29,20 +29,42 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Comment
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import java.text.DecimalFormat
 
-/**
- * @project Han1meViewer
- * @author Yenaly Liew
- * @time 2023/07/31 031 16:43
- */
 object Parser {
 
-    /**
-     * 所需 Regex
-     */
     object Regex {
         val videoSource = Regex("""const source = '(.+)'""")
         val viewAndUploadTime = Regex("""(觀看次數|观看次数)：(.+)次 *(\d{4}-\d{2}-\d{2})""")
+    }
+
+    private fun formatViewCount(viewString: String?): String? {
+        if (viewString.isNullOrBlank()) return null
+        
+        val cleaned = viewString.replace(",", "").replace("次", "").trim()
+        val number = cleaned.toDoubleOrNull() ?: return viewString
+        
+        return when {
+            number >= 1_000_000_000 -> {
+                val formatted = DecimalFormat("#.#").format(number / 1_000_000_000)
+                "${formatted}B"
+            }
+            number >= 1_000_000 -> {
+                val formatted = DecimalFormat("#.#").format(number / 1_000_000)
+                "${formatted}M"
+            }
+            number >= 1_000 -> {
+                val formatted = DecimalFormat("#.#").format(number / 1_000)
+                "${formatted}K"
+            }
+            number >= 100 -> {
+                val formatted = DecimalFormat("#.#").format(number / 100)
+                "${formatted}H"
+            }
+            else -> {
+                "${number.toInt()}t"
+            }
+        }
     }
 
     fun extractTokenFromLoginPage(body: String): String {
@@ -54,10 +76,9 @@ object Parser {
     fun homePageVer2(body: String): WebsiteState<HomePage> {
         val isAVSite = Preferences.baseUrl == HANIME_URL[3]
         val parseBody = Jsoup.parse(body).body()
-        val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value") // csrf token
+        val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value")
         val homePageParse = parseBody.select("div[id=home-rows-wrapper] > div")
 
-        // 用户信息
         val userInfo = parseBody.selectFirst("div[id=user-modal-dp-wrapper]")
         val avatarUrl: String? = userInfo?.selectFirst("img")?.absUrl("src")
         val username: String? = userInfo?.getElementById("user-modal-name")?.text()
@@ -67,7 +88,6 @@ object Parser {
         val userId: String = userIdRegex.find(userHomePageLink)?.groupValues?.get(1) ?: ""
         Log.i("userInfo","name:$username;id:$userId")
 
-        // 头图及其描述
         val bannerCSS = parseBody.selectFirst("div[id=home-banner-wrapper]")
         val bannerImg = bannerCSS?.previousElementSibling()
         val bannerTitle = bannerImg?.selectFirst("img")?.attr("alt")
@@ -83,7 +103,6 @@ object Parser {
         var bannerVideoCode = bannerVideoCodeScript?.let { script ->
             regex.find(script)?.groupValues?.get(1)
         }
-        // 目前先判断注释里的，以后可能会有变化
         if (bannerVideoCode == null) {
             bannerCSS?.traverse { node, _ ->
                 if (node is Comment) {
@@ -102,19 +121,18 @@ object Parser {
             )
         } else null
 
-        // 主页模块
-        val latestReleaseClass = homePageParse.getOrNull(0) // 最新上市
-        val latestUploadClass = homePageParse.getOrNull(1)  //最新上传
-        val ecchiAnimeClass = homePageParse.getOrNull(2)  //里番
-        val shortEpisodeAnimeClass = homePageParse.getOrNull(3)  // 泡面番
-        val motionAnimeClass = homePageParse.getOrNull(5)  // Motion Anime
-        val threeDCGClass = homePageParse.getOrNull(6)  //3DCG
-        val twoPointFiveDAnimeClass = homePageParse.getOrNull(7)  // 2.5D
-        val twoDAnimeClass = homePageParse.getOrNull(8)  // 2D
-        val aiGeneratedClass = homePageParse.getOrNull(10)  // AI生成
-        val mmdClass = homePageParse.getOrNull(11)  //  MMD
-        val cosplayClass = homePageParse.getOrNull(12)  // Cosplay
-        val watchingNowClass = homePageParse.getOrNull(13)  // 他们在看
+        val latestReleaseClass = homePageParse.getOrNull(0)
+        val latestUploadClass = homePageParse.getOrNull(1)
+        val ecchiAnimeClass = homePageParse.getOrNull(2)
+        val shortEpisodeAnimeClass = homePageParse.getOrNull(3)
+        val motionAnimeClass = homePageParse.getOrNull(5)
+        val threeDCGClass = homePageParse.getOrNull(6)
+        val twoPointFiveDAnimeClass = homePageParse.getOrNull(7)
+        val twoDAnimeClass = homePageParse.getOrNull(8)
+        val aiGeneratedClass = homePageParse.getOrNull(10)
+        val mmdClass = homePageParse.getOrNull(11)
+        val cosplayClass = homePageParse.getOrNull(12)
+        val watchingNowClass = homePageParse.getOrNull(13)
 
         val newAnimeTrailerClass = homePageParse.getOrNull(if (isAVSite) 13 else 12)
 
@@ -170,7 +188,6 @@ object Parser {
             }
         }
 
-        // emit!
         return WebsiteState.Success(
             HomePage(
                 csrfToken,
@@ -192,6 +209,7 @@ object Parser {
             )
         )
     }
+
     fun Element?.extractHanimeInfo(selector: String = "div[class^=horizontal-card]"): MutableList<HanimeInfo> {
         val resultList = mutableListOf<HanimeInfo>()
         this?.select(selector)?.forEach { item ->
@@ -209,7 +227,6 @@ object Parser {
         val allSimplifiedContentsClass =
             parseBody.getElementsByClass("home-rows-videos-wrapper").firstOrNull()
 
-        // emit!
         if (allContentsClass != null) {
             return hanimeSearchNormalVer2(allContentsClass)
         } else if (allSimplifiedContentsClass != null) {
@@ -231,7 +248,8 @@ object Parser {
         if (title == null || coverUrl == null || videoCode == null) return null
         val durationAndViews = hanimeSearchItem.select("div[class^=thumb-container]")
         val duration = durationAndViews.select("div[class^=duration]").text()
-        val views = durationAndViews.select("div[class^=stat-item]").getOrNull(1)?.text()
+        val rawViews = durationAndViews.select("div[class^=stat-item]").getOrNull(1)?.text()
+        val views = formatViewCount(rawViews)
         val artistAndUploadTime = hanimeSearchItem.selectFirst("div.subtitle a, div.video-meta-data a")!!.text().trim()
         var artist = ""
         var uploadTime = ""
@@ -257,7 +275,6 @@ object Parser {
         )
     }
 
-    // 每一个简化版视频单元
     private fun hanimeSimplifiedItem(hanimeSearchItem: Element): HanimeInfo? {
         val videoCode = hanimeSearchItem.attr("href").toVideoCode()
             .logIfParseNull(Parser::hanimeSimplifiedItem.name, "videoCode")
@@ -274,7 +291,6 @@ object Parser {
         )
     }
 
-    // 出来后是正常视频单元的页面用这个
     private fun hanimeSearchNormalVer2(
         allContentsClass: Element,
     ): PageLoadingState<MutableList<HanimeInfo>> {
@@ -292,7 +308,6 @@ object Parser {
         return PageLoadingState.Success(hanimeSearchList)
     }
 
-    // 出来后是简化版视频单元的页面用这个
     private fun hanimeSearchSimplified(
         allSimplifiedContentsClass: Element,
     ): PageLoadingState<MutableList<HanimeInfo>> {
@@ -308,10 +323,10 @@ object Parser {
 
     fun hanimeVideoVer2(body: String): VideoLoadingState<HanimeVideo> {
         val parseBody = Jsoup.parse(body).body()
-        val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value") // csrf token
+        val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value")
 
         val currentUserId =
-            parseBody.selectFirst("input[name=like-user-id]")?.attr("value") // current user id
+            parseBody.selectFirst("input[name=like-user-id]")?.attr("value")
 
         val title = parseBody.getElementById("shareBtn-title")?.text()
             .throwIfParseNull(Parser::hanimeVideoVer2.name, "title")
@@ -338,7 +353,8 @@ object Parser {
             }.getOrNull()
         }
 
-        val views = uploadTimeWithViewsGroups?.get(2)?.value
+        val rawViews = uploadTimeWithViewsGroups?.get(2)?.value
+        val views = formatViewCount(rawViews)
 
         val tags = parseBody.getElementsByClass("single-video-tag")
         val tagListWithLikeNum = mutableListOf<String>()
@@ -391,8 +407,9 @@ object Parser {
                     ?.contains("播放") == true
                 val cardMobileDuration = cardMobilePanel?.select("div[class*=card-mobile-duration]")
                 val eachDuration = cardMobileDuration?.firstOrNull()?.text()
-                val eachViews = cardMobileDuration?.getOrNull(2)?.text()
+                val rawEachViews = cardMobileDuration?.getOrNull(2)?.text()
                     ?.substringBefore("次")
+                val eachViews = formatViewCount(rawEachViews)
                 val playlistEachCoverUrl = eachTitleCover?.absUrl("src")
                     .throwIfParseNull(Parser::hanimeVideoVer2.name, "playlistEachCoverUrl")
                 val playlistEachTitle = eachTitleCover?.attr("alt")
@@ -450,12 +467,6 @@ object Parser {
                 }
             } else {
                 relatedAnimeList.addAll(relatedTabContent.extractHanimeInfo())
-//                children?.forEachStep2 { each ->
-//                    Log.i("children",each.toString())
-//                    relatedAnimeList.addAll(each.extractHanimeInfo())
-////                    val item = each.select("div[class^=video-item-container]")[0]
-////                    hanimeNormalItemVer2(item)?.let(relatedAnimeList::add)
-//                }
             }
         }
         Log.d("related_anime_list", relatedAnimeList.toString())
@@ -545,7 +556,6 @@ object Parser {
     fun hanimePreview(body: String): WebsiteState<HanimePreview> {
         val parseBody = Jsoup.parse(body).body()
 
-        // latest hanime
         val latestHanimeList = mutableListOf<HanimeInfo>()
         val latestHanimeClass = parseBody.selectFirst("div[class$=owl-theme]")
         latestHanimeClass?.let {
@@ -559,7 +569,7 @@ object Parser {
                     HanimeInfo(
                         coverUrl = coverUrl,
                         title = title,
-                        videoCode = EMPTY_STRING /* empty string here! */,
+                        videoCode = EMPTY_STRING,
                         itemType = HanimeInfo.SIMPLIFIED
                     )
                 )
@@ -671,7 +681,6 @@ object Parser {
             )
         )
     }
-
 
     fun playlists(body: String): WebsiteState<Playlists> {
         val parseBody = Jsoup.parse(body).body()
@@ -884,7 +893,6 @@ object Parser {
         val subscriptionsVideosRoot = parseBody.selectFirst("div.content-padding-new")
             ?: return WebsiteState.Error(IllegalStateException("找不到 subscriptionsVideosRoot"))
 
-        // 解析订阅作者
         val artists = subscriptionsRoot.select("div.subscriptions-artist-card").mapNotNull { card ->
             try {
                 val imgs = card.select("img")
@@ -901,7 +909,6 @@ object Parser {
             }
         }
 
-        // 解析订阅视频
         val videos = subscriptionsVideosRoot.select("div[class^=video-item-container]")
             .mapNotNull { videoCard ->
                 try {
@@ -913,7 +920,8 @@ object Parser {
                     val title = videoCard.attr("title").trim()
                     val durationAndViews = videoCard.select("div[class^=thumb-container]")
                     val duration = durationAndViews.select("div[class^=duration]").text()
-                    val views = durationAndViews.select("div[class^=stat-item]").getOrNull(1)?.text()
+                    val rawViews = durationAndViews.select("div[class^=stat-item]").getOrNull(1)?.text()
+                    val views = formatViewCount(rawViews)
                     val artistAndUploadTime = videoCard.select("div.subtitle a").text().trim()
                     var artist = ""
                     var uploadTime = ""
@@ -961,18 +969,12 @@ object Parser {
             ?.maxOrNull() ?: 1
     }
 
-    /**
-     * 這個網站的網頁結構真的很奇怪，所以我寫了一個 forEachStep2 來處理
-     */
     private inline fun Elements.forEachStep2(action: (Element) -> Unit) {
         for (i in 0 until size step 2) {
             action(get(i))
         }
     }
 
-    /**
-     * 得到 Element 的 child，如果 index 超出範圍，就返回 null
-     */
     private fun Element.childOrNull(index: Int): Element? {
         return try {
             child(index)
@@ -981,24 +983,9 @@ object Parser {
         }
     }
 
-    /**
-     * 基本都是必需的參數，所以如果是 null，就直接丟出 [ParseException]
-     *
-     * @param funcName 這個參數是在哪個函數中被使用的
-     * @param varName 這個參數的名稱
-     * @return 如果 [this] 不是 null，就回傳 [this]
-     * @throws ParseException 如果 [this] 是 null，就丟出 [ParseException]
-     */
     private fun <T> T?.throwIfParseNull(funcName: String, varName: String): T = this
         ?: throw ParseException(funcName, varName)
 
-    /**
-     * 如果 [this] 是 null，就在 logcat 中顯示訊息
-     *
-     * @param funcName 這個參數是在哪個函數中被使用的
-     * @param varName 這個參數的名稱
-     * @return 回傳 [this]
-     */
     private fun <T> T?.logIfParseNull(
         funcName: String, varName: String, loginNeeded: Boolean = false,
     ): T? = also {
