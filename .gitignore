@@ -29,6 +29,8 @@ gradle-app.setting
 # 构建输出
 **/build/
 **/outputs/
+app/src/main/res/xml/Han1meViewer-v*.apk
+
 
 # 本地配置文件
 **/google-services.json
