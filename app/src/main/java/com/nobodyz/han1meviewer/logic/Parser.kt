@@ -113,27 +113,6 @@ object Parser {
                 val minutes = dateString.replace("分鐘前", "").replace("分钟前", "").trim().toIntOrNull()
                 if (minutes == 1) "1 minute ago" else "$minutes minutes ago"
             }
-            dateString.matches(Regex("\\d{4}-\\d{2}-\\d{2}")) -> {
-                try {
-                    val localDate = LocalDate.parse(dateString, LOCAL_DATE_FORMAT)
-                    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-                    val daysDiff = today.dayOfYear - localDate.dayOfYear
-                    when {
-                        daysDiff == 0 -> "Today"
-                        daysDiff == 1 -> "Yesterday"
-                        daysDiff in 2..6 -> "$daysDiff days ago"
-                        daysDiff in 7..13 -> "Last week"
-                        daysDiff in 14..20 -> "2 weeks ago"
-                        daysDiff in 21..28 -> "3 weeks ago"
-                        daysDiff in 29..60 -> "Last month"
-                        daysDiff in 61..365 -> "${daysDiff / 30} months ago"
-                        daysDiff in 366..730 -> "Last year"
-                        else -> "${daysDiff / 365} years ago"
-                    }
-                } catch (e: Exception) {
-                    dateString
-                }
-            }
             else -> dateString
         }
     }
