@@ -4,12 +4,12 @@
 
     <PreferenceCategory app:title="@string/video">
 
-        <com.yenaly.han1meviewer.ui.view.pref.MaterialDialogPreference
+        <com.nobodyz.han1meviewer.ui.view.pref.MaterialDialogPreference
             app:icon="@drawable/baseline_simp_to_trad_24"
             app:key="video_language"
             app:title="@string/video_language"
             app:useSimpleSummaryProvider="true" />
-        <com.yenaly.han1meviewer.ui.view.pref.MaterialDialogPreference
+        <com.nobodyz.han1meviewer.ui.view.pref.MaterialDialogPreference
             app:icon="@drawable/ic_video_quilty"
             app:key="default_video_quality"
             app:title="@string/default_video_quilty"
@@ -96,7 +96,7 @@
 
     <PreferenceCategory app:title="@string/theme">
 
-        <com.yenaly.han1meviewer.ui.view.pref.MaterialDialogPreference
+        <com.nobodyz.han1meviewer.ui.view.pref.MaterialDialogPreference
             app:icon="@drawable/ic_baseline_moon_24"
             app:key="use_dark_mode"
             app:title="@string/dark_theme"
@@ -108,7 +108,7 @@
             app:summary="@string/dynamic_color_summary"
             app:title="@string/dynamic_color_title" />
 
-        <com.yenaly.han1meviewer.ui.view.pref.MaterialDialogPreference
+        <com.nobodyz.han1meviewer.ui.view.pref.MaterialDialogPreference
             app:key="app_language"
             app:title="@string/app_lang"
             app:summary="@string/app_lang_sum"
@@ -133,7 +133,7 @@
             app:summary="@string/use_ci_update_channel_summary"
             app:title="@string/use_ci_update_channel" />
 
-        <com.yenaly.han1meviewer.ui.view.pref.MaterialSliderPreference
+        <com.nobodyz.han1meviewer.ui.view.pref.MaterialSliderPreference
             android:max="30"
             app:icon="@drawable/ic_clock"
             app:key="update_popup_interval_days"

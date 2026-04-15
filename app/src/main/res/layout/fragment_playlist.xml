@@ -50,7 +50,7 @@
                             android:layout_height="match_parent"
                             android:background="@drawable/linear_gradient_90_notrans" />
 
-                        <com.yenaly.han1meviewer.ui.view.PlaylistHeader
+                        <com.nobodyz.han1meviewer.ui.view.PlaylistHeader
                             android:id="@+id/playlist_header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

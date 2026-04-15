@@ -55,7 +55,7 @@
             android:initOrder="114514"
             tools:node="merge">
             <meta-data
-                android:name="com.yenaly.han1meviewer.HInitializer"
+                android:name="com.nobodyz.han1meviewer.HInitializer"
                 android:value="androidx.startup" />
         </provider>
 

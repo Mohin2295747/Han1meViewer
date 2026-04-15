@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.yenaly.han1meviewer.ui.view.pref.MaterialDialogPreference
+    <com.nobodyz.han1meviewer.ui.view.pref.MaterialDialogPreference
         app:key="switch_player_kernel"
         app:title="@string/switch_player_kernel"
         app:icon="@drawable/baseline_atomic_24"
@@ -12,7 +12,7 @@
         app:title="@string/mpv_advanced_settings"
         app:summary="@string/mpv_advanced_settings_summary"
         app:icon="@drawable/baseline_player_24"
-        app:fragment="com.yenaly.han1meviewer.ui.fragment.MpvSettingsFragment" />
+        app:fragment="com.nobodyz.han1meviewer.ui.fragment.MpvSettingsFragment" />
 
     <com.yenaly.yenaly_libs.base.preference.MaterialSwitchPreference
         app:defaultValue="true"
@@ -20,19 +20,19 @@
         app:title="@string/show_bottom_progress"
         app:icon="@drawable/baseline_seek_24"/>
 
-    <com.yenaly.han1meviewer.ui.view.pref.MaterialDialogPreference
+    <com.nobodyz.han1meviewer.ui.view.pref.MaterialDialogPreference
         app:key="player_speed"
         app:title="@string/default_playback_speed"
         app:icon="@drawable/baseline_speed2_24"
         app:useSimpleSummaryProvider="true" />
 
-    <com.yenaly.han1meviewer.ui.view.pref.MaterialDialogPreference
+    <com.nobodyz.han1meviewer.ui.view.pref.MaterialDialogPreference
         app:key="long_press_speed_times"
         app:title="@string/long_press_speed_multiplier"
         app:icon="@drawable/baseline_touch_24"
         app:useSimpleSummaryProvider="true" />
 
-    <com.yenaly.han1meviewer.ui.view.pref.MaterialSliderPreference
+    <com.nobodyz.han1meviewer.ui.view.pref.MaterialSliderPreference
         android:max="9"
         app:defaultValue="5"
         app:key="slide_sensitivity"

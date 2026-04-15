@@ -35,7 +35,7 @@ android {
 
 
     defaultConfig {
-        applicationId = "com.yenaly.han1meviewer"
+        applicationId = "com.nobodyz.han1meviewer"
         minSdk = property("min.sdk")?.toString()?.toIntOrNull()
         targetSdk = property("target.sdk")?.toString()?.toIntOrNull()
         val (code, name) = createVersion(major = 0, minor = 23, patch = 7)
@@ -122,7 +122,7 @@ android {
     lint {
         disable += setOf("EnsureInitializerMetadata")
     }
-    namespace = "com.yenaly.han1meviewer"
+    namespace = "com.nobodyz.han1meviewer"
 }
 
 dependencies {

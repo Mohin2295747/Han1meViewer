@@ -11,7 +11,7 @@
     <!-- 栈底：主页 -->
     <fragment
         android:id="@+id/nv_home_page"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.HomePageFragment"
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.HomePageFragment"
         tools:layout="@layout/fragment_home_page">
 
         <!-- 可跳转到搜索页 -->
@@ -52,14 +52,14 @@
     <!-- 搜索页 -->
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.yenaly.han1meviewer.ui.fragment.search.SearchFragment"
+        android:name="com.nobodyz.han1meviewer.ui.fragment.search.SearchFragment"
         tools:layout="@layout/fragment_search">
     </fragment>
 
     <!-- 视频页（详情+播放器合一） -->
     <fragment
         android:id="@+id/videoFragment"
-        android:name="com.yenaly.han1meviewer.ui.fragment.video.VideoFragment"
+        android:name="com.nobodyz.han1meviewer.ui.fragment.video.VideoFragment"
         tools:layout="@layout/fragment_video">
         <argument
             android:name="video_code"
@@ -77,35 +77,35 @@
     <!-- 其他页面（按需添加） -->
     <fragment
         android:id="@+id/nv_watch_history"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.WatchHistoryFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.WatchHistoryFragment" />
     <fragment
         android:id="@+id/nv_fav_video"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.MyFavVideoFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.MyFavVideoFragment" />
     <fragment
         android:id="@+id/nv_playlist"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.MyPlaylistFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.MyPlaylistFragment" />
     <fragment
         android:id="@+id/nv_watch_later"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.MyWatchLaterFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.MyWatchLaterFragment" />
     <fragment
         android:id="@+id/nv_subscription"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.SubscriptionFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.SubscriptionFragment" />
     <fragment
         android:id="@+id/nv_daily_check_in"
-        android:name="com.yenaly.han1meviewer.ui.fragment.dailycheckin.DailyCheckInFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.dailycheckin.DailyCheckInFragment" />
     <fragment
         android:id="@+id/nv_download"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.DownloadFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.DownloadFragment" />
     <fragment
         android:id="@+id/nv_preview"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.preview.PreviewFragment" >
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.preview.PreviewFragment" >
         <action
             android:id="@+id/action_nv_preview_to_nv_preview_comment"
             app:destination="@id/nv_preview_comment" />
     </fragment>
     <fragment
         android:id="@+id/nv_preview_comment"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.preview.PreviewCommentFragment" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.preview.PreviewCommentFragment" />
     <!-- 设置模块子导航图 -->
     <include app:graph="@navigation/nav_settings" />
 
@@ -118,5 +118,5 @@
         app:destination="@id/hKeyframeSettingsFragment" />
     <fragment
         android:id="@+id/myPlayListFragmentV2"
-        android:name="com.yenaly.han1meviewer.ui.fragment.home.MyPlayListFragmentV2" />
+        android:name="com.nobodyz.han1meviewer.ui.fragment.home.MyPlayListFragmentV2" />
 </navigation>

@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            app:layout_behavior="com.yenaly.han1meviewer.ui.view.video.VideoPlayerAppBarBehavior">
+            app:layout_behavior="com.nobodyz.han1meviewer.ui.view.video.VideoPlayerAppBarBehavior">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -26,7 +26,7 @@
                 app:collapsedTitleTextAppearance="@android:color/transparent"
                 app:expandedTitleTextAppearance="@android:color/transparent">
 
-                <com.yenaly.han1meviewer.ui.view.video.HJzvdStd
+                <com.nobodyz.han1meviewer.ui.view.video.HJzvdStd
                     android:id="@+id/video_player"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"

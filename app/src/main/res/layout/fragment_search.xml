@@ -8,7 +8,7 @@
         android:background="?android:windowBackground">
 
         <!-- search_bar 悬浮在顶部 -->
-        <com.yenaly.han1meviewer.ui.view.HanimeSearchBar
+        <com.nobodyz.han1meviewer.ui.view.HanimeSearchBar
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

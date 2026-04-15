@@ -58,7 +58,7 @@
             android:rowCount="3"
             tools:ignore="UselessParent">
 
-            <com.yenaly.han1meviewer.ui.view.HOptionChip
+            <com.nobodyz.han1meviewer.ui.view.HOptionChip
                 android:id="@+id/type"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -69,7 +69,7 @@
                 android:textAlignment="center" />
 
 
-            <com.yenaly.han1meviewer.ui.view.HOptionChip
+            <com.nobodyz.han1meviewer.ui.view.HOptionChip
                 android:id="@+id/sort_option"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -79,7 +79,7 @@
                 android:textColor="?attr/colorOnPrimaryContainer"
                 android:textAlignment="center" />
 
-            <com.yenaly.han1meviewer.ui.view.HOptionChip
+            <com.nobodyz.han1meviewer.ui.view.HOptionChip
                 android:id="@+id/tag"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -90,7 +90,7 @@
                 android:textAlignment="center" />
 
 
-            <com.yenaly.han1meviewer.ui.view.HOptionChip
+            <com.nobodyz.han1meviewer.ui.view.HOptionChip
                 android:id="@+id/release_date"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -100,7 +100,7 @@
                 android:textColor="?attr/colorOnPrimaryContainer"
                 android:textAlignment="center" />
 
-            <com.yenaly.han1meviewer.ui.view.HOptionChip
+            <com.nobodyz.han1meviewer.ui.view.HOptionChip
                 android:id="@+id/duration"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -110,7 +110,7 @@
                 android:textColor="?attr/colorOnPrimaryContainer"
                 android:textAlignment="center" />
 
-            <com.yenaly.han1meviewer.ui.view.HOptionChip
+            <com.nobodyz.han1meviewer.ui.view.HOptionChip
                 android:id="@+id/brand"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
