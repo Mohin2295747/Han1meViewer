@@ -1,35 +1,39 @@
-package com.nobodyz.han1meviewer.logic
+package com.yenaly.han1meviewer.logic
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.nobodyz.han1meviewer.EMPTY_STRING
-import com.nobodyz.han1meviewer.HanimeConstants.HANIME_URL
-import com.nobodyz.han1meviewer.HanimeResolution
-import com.nobodyz.han1meviewer.LOCAL_DATE_FORMAT
-import com.nobodyz.han1meviewer.Preferences
-import com.nobodyz.han1meviewer.Preferences.isAlreadyLogin
-import com.nobodyz.han1meviewer.logic.exception.ParseException
-import com.nobodyz.han1meviewer.logic.model.HanimeInfo
-import com.nobodyz.han1meviewer.logic.model.HanimePreview
-import com.nobodyz.han1meviewer.logic.model.HanimeVideo
-import com.nobodyz.han1meviewer.logic.model.HomePage
-import com.nobodyz.han1meviewer.logic.model.MyListItems
-import com.nobodyz.han1meviewer.logic.model.MySubscriptions
-import com.nobodyz.han1meviewer.logic.model.Playlists
-import com.nobodyz.han1meviewer.logic.model.SubscriptionItem
-import com.nobodyz.han1meviewer.logic.model.SubscriptionVideosItem
-import com.nobodyz.han1meviewer.logic.model.VideoComments
-import com.nobodyz.han1meviewer.logic.state.PageLoadingState
-import com.nobodyz.han1meviewer.logic.state.VideoLoadingState
-import com.nobodyz.han1meviewer.logic.state.WebsiteState
-import com.nobodyz.han1meviewer.toVideoCode
+import com.yenaly.han1meviewer.EMPTY_STRING
+import com.yenaly.han1meviewer.HanimeConstants.HANIME_URL
+import com.yenaly.han1meviewer.HanimeResolution
+import com.yenaly.han1meviewer.LOCAL_DATE_FORMAT
+import com.yenaly.han1meviewer.Preferences
+import com.yenaly.han1meviewer.Preferences.isAlreadyLogin
+import com.yenaly.han1meviewer.logic.exception.ParseException
+import com.yenaly.han1meviewer.logic.model.HanimeInfo
+import com.yenaly.han1meviewer.logic.model.HanimePreview
+import com.yenaly.han1meviewer.logic.model.HanimeVideo
+import com.yenaly.han1meviewer.logic.model.HomePage
+import com.yenaly.han1meviewer.logic.model.MyListItems
+import com.yenaly.han1meviewer.logic.model.MySubscriptions
+import com.yenaly.han1meviewer.logic.model.Playlists
+import com.yenaly.han1meviewer.logic.model.SubscriptionItem
+import com.yenaly.han1meviewer.logic.model.SubscriptionVideosItem
+import com.yenaly.han1meviewer.logic.model.VideoComments
+import com.yenaly.han1meviewer.logic.state.PageLoadingState
+import com.yenaly.han1meviewer.logic.state.VideoLoadingState
+import com.yenaly.han1meviewer.logic.state.WebsiteState
+import com.yenaly.han1meviewer.toVideoCode
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Comment
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.text.DecimalFormat
+import kotlin.time.Duration.Companion.days
 
 object Parser {
 
@@ -40,11 +44,11 @@ object Parser {
 
     private fun formatViewCount(viewString: String?): String? {
         if (viewString.isNullOrBlank()) return null
-
+        
         val cleaned = viewString.replace(",", "").replace("次", "").trim()
-
+        
         val number = when {
-        cleaned.contains("万") || cleaned.contains("萬") -> {
+            cleaned.contains("万") || cleaned.contains("萬") -> {
                 val numPart = cleaned.replace("万", "").replace("萬", "").toDoubleOrNull() 
                     ?: return viewString
                 numPart * 10_000
@@ -56,7 +60,7 @@ object Parser {
             }
             else -> cleaned.toDoubleOrNull() ?: return viewString
         }
-
+        
         return when {
             number >= 1_000_000_000 -> {
                 val formatted = DecimalFormat("#.#").format(number / 1_000_000_000)
@@ -77,6 +81,60 @@ object Parser {
             else -> {
                 "${number.toInt()}t"
             }
+        }
+    }
+
+    private fun formatDateHumanReadable(dateString: String?): String? {
+        if (dateString.isNullOrBlank()) return null
+        
+        return when {
+            dateString.contains("小時前") || dateString.contains("小时前") -> {
+                val hours = dateString.replace("小時前", "").replace("小时前", "").trim().toIntOrNull()
+                if (hours == 1) "1 hour ago" else "$hours hours ago"
+            }
+            dateString.contains("天前") -> {
+                val days = dateString.replace("天前", "").trim().toIntOrNull()
+                if (days == 1) "Yesterday" else "$days days ago"
+            }
+            dateString.contains("週前") || dateString.contains("周前") -> {
+                val weeks = dateString.replace("週前", "").replace("周前", "").trim().toIntOrNull()
+                if (weeks == 1) "Last week" else "$weeks weeks ago"
+            }
+            dateString.contains("個月前") || dateString.contains("个月前") -> {
+                val months = dateString.replace("個月前", "").replace("个月前", "").trim().toIntOrNull()
+                if (months == 1) "Last month" else "$months months ago"
+            }
+            dateString.contains("年前") -> {
+                val years = dateString.replace("年前", "").trim().toIntOrNull()
+                if (years == 1) "Last year" else "$years years ago"
+            }
+            dateString.contains("剛剛") || dateString.contains("刚刚") -> "Just now"
+            dateString.contains("分鐘前") || dateString.contains("分钟前") -> {
+                val minutes = dateString.replace("分鐘前", "").replace("分钟前", "").trim().toIntOrNull()
+                if (minutes == 1) "1 minute ago" else "$minutes minutes ago"
+            }
+            dateString.matches(Regex("\\d{4}-\\d{2}-\\d{2}")) -> {
+                try {
+                    val localDate = LocalDate.parse(dateString, LOCAL_DATE_FORMAT)
+                    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    val daysDiff = today.dayOfYear - localDate.dayOfYear
+                    when {
+                        daysDiff == 0 -> "Today"
+                        daysDiff == 1 -> "Yesterday"
+                        daysDiff in 2..6 -> "$daysDiff days ago"
+                        daysDiff in 7..13 -> "Last week"
+                        daysDiff in 14..20 -> "2 weeks ago"
+                        daysDiff in 21..28 -> "3 weeks ago"
+                        daysDiff in 29..60 -> "Last month"
+                        daysDiff in 61..365 -> "${daysDiff / 30} months ago"
+                        daysDiff in 366..730 -> "Last year"
+                        else -> "${daysDiff / 365} years ago"
+                    }
+                } catch (e: Exception) {
+                    dateString
+                }
+            }
+            else -> dateString
         }
     }
 
@@ -269,7 +327,8 @@ object Parser {
         if (artistAndUploadTime.contains("•")) {
             val parts = artistAndUploadTime.split("•").map { it.trim() }
             artist = parts[0].trim()
-            uploadTime = parts[1].trim()
+            val rawDate = parts[1].trim()
+            uploadTime = formatDateHumanReadable(rawDate) ?: rawDate
         }
         val infoBoxes = hanimeSearchItem.selectFirst(".stats-container .stat-item")
         val fullText = infoBoxes?.text() ?: ""
@@ -360,7 +419,9 @@ object Parser {
         val uploadTimeWithViewsGroups = uploadTimeWithViews?.let {
             Regex.viewAndUploadTime.find(it)?.groups
         }
-        val uploadTime = uploadTimeWithViewsGroups?.get(3)?.value?.let { time ->
+        val rawUploadTime = uploadTimeWithViewsGroups?.get(3)?.value
+        val uploadTimeDisplay = formatDateHumanReadable(rawUploadTime) ?: rawUploadTime
+        val uploadTime = rawUploadTime?.let { time ->
             runCatching {
                 LocalDate.parse(time, LOCAL_DATE_FORMAT)
             }.getOrNull()
@@ -941,7 +1002,8 @@ object Parser {
                     if (artistAndUploadTime.contains("•")) {
                         val parts = artistAndUploadTime.split("•").map { it.trim() }
                         artist = parts[0].trim()
-                        uploadTime = parts[1].trim()
+                        val rawDate = parts[1].trim()
+                        uploadTime = formatDateHumanReadable(rawDate) ?: rawDate
                     }
                     val infoBoxes = videoCard.selectFirst(".stats-container .stat-item")
                     val fullText = infoBoxes?.text() ?: ""
