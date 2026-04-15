@@ -40,10 +40,23 @@ object Parser {
 
     private fun formatViewCount(viewString: String?): String? {
         if (viewString.isNullOrBlank()) return null
-        
+
         val cleaned = viewString.replace(",", "").replace("次", "").trim()
-        val number = cleaned.toDoubleOrNull() ?: return viewString
-        
+
+        val number = when {
+        cleaned.contains("万") || cleaned.contains("萬") -> {
+                val numPart = cleaned.replace("万", "").replace("萬", "").toDoubleOrNull() 
+                    ?: return viewString
+                numPart * 10_000
+            }
+            cleaned.contains("亿") || cleaned.contains("億") -> {
+                val numPart = cleaned.replace("亿", "").replace("億", "").toDoubleOrNull() 
+                    ?: return viewString
+                numPart * 100_000_000
+            }
+            else -> cleaned.toDoubleOrNull() ?: return viewString
+        }
+
         return when {
             number >= 1_000_000_000 -> {
                 val formatted = DecimalFormat("#.#").format(number / 1_000_000_000)
