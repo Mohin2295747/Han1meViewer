@@ -880,108 +880,108 @@ class MainActivity : YenalyActivity<ActivityMainBinding>(), DrawerListener, Tool
     }
 
     private fun setupPredictiveBack() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
 
-    if (Preferences.disablePredictiveBack) {
-        onBackInvokedDispatcher.registerOnBackInvokedCallback(
-            android.window.OnBackInvokedDispatcher.PRIORITY_OVERLAY
-        ) {
-            onBackPressedDispatcher.onBackPressed()
-        }
-    } else {
-        onBackInvokedDispatcher.registerOnBackInvokedCallback(
-            android.window.OnBackInvokedDispatcher.PRIORITY_OVERLAY,
-            object : android.window.OnBackAnimationCallback {
-                private var fragmentView: View? = null
-                private var viewWidth = 0f
-                private var viewHeight = 0f
-
-                override fun onBackStarted(backEvent: android.window.BackEvent) {
-                    if (navController.currentDestination?.id == R.id.nv_home_page) {
-                        fragmentView = null
-                        return
-                    }
-                    fragmentView = navHostFragment.childFragmentManager
-                        .primaryNavigationFragment?.view
-                    fragmentView?.let {
-                        viewWidth = it.width.toFloat()
-                        viewHeight = it.height.toFloat()
-
-                        it.clipToOutline = true
-                        it.outlineProvider = object : android.view.ViewOutlineProvider() {
-                            override fun getOutline(view: View, outline: android.graphics.Outline) {
-                                outline.setRoundRect(
-                                    0, 0, view.width, view.height, backCornerRadius
-                                )
-                            }
-                        }
-
-                        showCachedPreview()
-                    }
-                }
-
-                override fun onBackProgressed(backEvent: android.window.BackEvent) {
-                    val v = fragmentView ?: return
-                    val progress = backEvent.progress.coerceIn(0f, 1f)
-                    val scale = 1f - progress * 0.1f
-                    val touchX = backEvent.touchX
-                    val touchY = backEvent.touchY
-                    v.pivotX = viewWidth / 2f
-                    v.pivotY = viewHeight / 2f
-                    v.scaleX = scale
-                    v.scaleY = scale
-                    v.translationX = (touchX - viewWidth / 2f) * progress * 0.1f
-                    v.translationY = (touchY - viewHeight / 2f) * progress * 0.1f
-                }
-
-                override fun onBackInvoked() {
-                    fragmentView?.clipToOutline = false
-                    hidePreview()
-                    onBackPressedDispatcher.onBackPressed()
-                }
-
-                override fun onBackCancelled() {
-                    fragmentView?.clipToOutline = false
-                    hidePreview()
-                    fragmentView?.animate()
-                        ?.scaleX(1f)?.scaleY(1f)
-                        ?.translationX(0f)?.translationY(0f)
-                        ?.setDuration(200)
-                        ?.start()
-                }
+        if (Preferences.disablePredictiveBack) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                android.window.OnBackInvokedDispatcher.PRIORITY_OVERLAY
+            ) {
+                onBackPressedDispatcher.onBackPressed()
             }
-        )
-    }
-}
+        } else {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                android.window.OnBackInvokedDispatcher.PRIORITY_OVERLAY,
+                object : android.window.OnBackAnimationCallback {
+                    private var fragmentView: View? = null
+                    private var viewWidth = 0f
+                    private var viewHeight = 0f
 
-/**
- * Show the cached preview bitmap when back gesture starts
- */
-private fun showCachedPreview() {
-    val prevDestId = navController.previousBackStackEntry?.destination?.id ?: return
-    val bitmap = synchronized(previewBitmapCache) {
-        previewBitmapCache[prevDestId]
-    }
-    if (bitmap != null && previewImageView != null) {
-        previewImageView?.setImageBitmap(bitmap)
-        previewImageView?.visibility = View.VISIBLE
-    }
-}
+                    override fun onBackStarted(backEvent: android.window.BackEvent) {
+                        if (navController.currentDestination?.id == R.id.nv_home_page) {
+                            fragmentView = null
+                            return
+                        }
+                        fragmentView = navHostFragment.childFragmentManager
+                            .primaryNavigationFragment?.view
+                        fragmentView?.let {
+                            viewWidth = it.width.toFloat()
+                            viewHeight = it.height.toFloat()
 
-/**
- * Hide the preview ImageView and dim overlay
- */
-private fun hidePreview() {
-    previewImageView?.visibility = View.GONE
-    previewImageView?.setImageBitmap(null)
-}
+                            it.clipToOutline = true
+                            it.outlineProvider = object : android.view.ViewOutlineProvider() {
+                                override fun getOutline(view: View, outline: android.graphics.Outline) {
+                                    outline.setRoundRect(
+                                        0, 0, view.width, view.height, backCornerRadius
+                                    )
+                                }
+                            }
 
-override fun onDestroy() {
-    super.onDestroy()
-    synchronized(previewBitmapCache) {
-        previewBitmapCache.values.forEach { it.recycle() }
-        previewBitmapCache.clear()
+                            showCachedPreview()
+                        }
+                    }
+
+                    override fun onBackProgressed(backEvent: android.window.BackEvent) {
+                        val v = fragmentView ?: return
+                        val progress = backEvent.progress.coerceIn(0f, 1f)
+                        val scale = 1f - progress * 0.1f
+                        val touchX = backEvent.touchX
+                        val touchY = backEvent.touchY
+                        v.pivotX = viewWidth / 2f
+                        v.pivotY = viewHeight / 2f
+                        v.scaleX = scale
+                        v.scaleY = scale
+                        v.translationX = (touchX - viewWidth / 2f) * progress * 0.1f
+                        v.translationY = (touchY - viewHeight / 2f) * progress * 0.1f
+                    }
+
+                    override fun onBackInvoked() {
+                        fragmentView?.clipToOutline = false
+                        hidePreview()
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+
+                    override fun onBackCancelled() {
+                        fragmentView?.clipToOutline = false
+                        hidePreview()
+                        fragmentView?.animate()
+                            ?.scaleX(1f)?.scaleY(1f)
+                            ?.translationX(0f)?.translationY(0f)
+                            ?.setDuration(200)
+                            ?.start()
+                    }
+                }
+            )
+        }
     }
-}
+
+    /**
+     * Show the cached preview bitmap when back gesture starts
+     */
+    private fun showCachedPreview() {
+        val prevDestId = navController.previousBackStackEntry?.destination?.id ?: return
+        val bitmap = synchronized(previewBitmapCache) {
+            previewBitmapCache[prevDestId]
+        }
+        if (bitmap != null && previewImageView != null) {
+            previewImageView?.setImageBitmap(bitmap)
+            previewImageView?.visibility = View.VISIBLE
+        }
+    }
+
+    /**
+     * Hide the preview ImageView and dim overlay
+     */
+    private fun hidePreview() {
+        previewImageView?.visibility = View.GONE
+        previewImageView?.setImageBitmap(null)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        synchronized(previewBitmapCache) {
+            previewBitmapCache.values.forEach { it.recycle() }
+            previewBitmapCache.clear()
+        }
+    }
 
 }
