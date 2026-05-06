@@ -481,7 +481,7 @@ class VideoFragment : YenalyFragment<FragmentVideoBinding>(), OrientationManager
         val width = rv.width.takeIf { it > 0 } ?: rv.measuredWidth
         if (width <= 0) return
         val availableWidth = (width - rv.paddingStart - rv.paddingEnd).coerceAtLeast(0)
-        val itemWidth = if (items.first().itemType == com.yenaly.han1meviewer.logic.model.HanimeInfo.NORMAL) {
+        val itemWidth = if (items.first().itemType == com.nobodyz.han1meviewer.logic.model.HanimeInfo.NORMAL) {
             resources.getDimension(R.dimen.video_cover_width)
         } else {
             resources.getDimension(R.dimen.video_cover_simplified_width)
