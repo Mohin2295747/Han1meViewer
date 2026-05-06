@@ -54,6 +54,7 @@ import com.nobodyz.han1meviewer.logic.DatabaseRepo
 import com.nobodyz.han1meviewer.logic.entity.HKeyframeEntity
 import com.nobodyz.han1meviewer.logic.entity.WatchHistoryEntity
 import com.nobodyz.han1meviewer.logic.exception.ParseException
+import com.nobodyz.han1meviewer.logic.model.HanimeInfo
 import com.nobodyz.han1meviewer.logic.state.VideoLoadingState
 import com.nobodyz.han1meviewer.ui.activity.MainActivity
 import com.nobodyz.han1meviewer.ui.adapter.HanimeVideoRvAdapter

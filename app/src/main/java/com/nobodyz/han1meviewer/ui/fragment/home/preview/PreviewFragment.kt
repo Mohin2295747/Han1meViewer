@@ -42,6 +42,7 @@ import com.nobodyz.han1meviewer.DATE_CODE
 import com.nobodyz.han1meviewer.PREVIEW_COMMENT_PREFIX
 import com.nobodyz.han1meviewer.R
 import com.nobodyz.han1meviewer.databinding.FragmentPreviewBinding
+import com.nobodyz.han1meviewer.logic.exception.HanimeNotFoundException
 import com.nobodyz.han1meviewer.logic.state.WebsiteState
 import com.nobodyz.han1meviewer.pienization
 import com.nobodyz.han1meviewer.ui.adapter.HanimePreviewNewsRvAdapter
