@@ -455,7 +455,7 @@ class VideoFragment : YenalyFragment<FragmentVideoBinding>(), OrientationManager
         (tabletLandscapeLayout?.parent as? ViewGroup)?.removeView(tabletLandscapeLayout)
     }
 
-    private fun scheduleRightPanelGridSpanUpdate(items: List<com.yenaly.han1meviewer.logic.model.HanimeInfo>) {
+    private fun scheduleRightPanelGridSpanUpdate(items: List<HanimeInfo>) {
         val rv = tabletRightRecyclerView ?: return
         if (items.isEmpty()) return
         if (rv.isLaidOut) {
@@ -475,13 +475,13 @@ class VideoFragment : YenalyFragment<FragmentVideoBinding>(), OrientationManager
     }
 
     // 根据右侧面板宽度动态计算相关视频网格列数
-    private fun updateRightPanelGridSpan(items: List<com.yenaly.han1meviewer.logic.model.HanimeInfo>) {
+    private fun updateRightPanelGridSpan(items: List<HanimeInfo>) {
         val rv = tabletRightRecyclerView ?: return
         if (items.isEmpty()) return
         val width = rv.width.takeIf { it > 0 } ?: rv.measuredWidth
         if (width <= 0) return
         val availableWidth = (width - rv.paddingStart - rv.paddingEnd).coerceAtLeast(0)
-        val itemWidth = if (items.first().itemType == com.nobodyz.han1meviewer.logic.model.HanimeInfo.NORMAL) {
+        val itemWidth = if (items.first().itemType == HanimeInfo.NORMAL) {
             resources.getDimension(R.dimen.video_cover_width)
         } else {
             resources.getDimension(R.dimen.video_cover_simplified_width)
